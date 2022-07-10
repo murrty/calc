@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -10,6 +9,7 @@ namespace calc {
         private bool _bigEndian = true;
         private bool _enabled = false;
         private byte _byte = 0x0;
+        private byte endianstorage;
 
         /// <summary>
         /// The byte-order of the container.
@@ -17,8 +17,28 @@ namespace calc {
         public bool BigEndian {
             get => _bigEndian;
             set {
-                _bigEndian = value;
-                ParseByte();
+                if (_bigEndian != value) {
+                    _bigEndian = value;
+
+                    endianstorage = Byte0.Byte;
+                    Byte0.Byte = Byte7.Byte;
+                    Byte7.Byte = endianstorage;
+
+                    endianstorage = Byte1.Byte;
+                    Byte1.Byte = Byte6.Byte;
+                    Byte6.Byte = endianstorage;
+
+                    endianstorage = Byte2.Byte;
+                    Byte2.Byte = Byte5.Byte;
+                    Byte5.Byte = endianstorage;
+
+                    endianstorage = Byte3.Byte;
+                    Byte3.Byte = Byte4.Byte;
+                    Byte4.Byte = endianstorage;
+
+                    endianstorage = 0x0;
+                    ParseByte();
+                }
             }
         }
 
@@ -229,18 +249,7 @@ namespace calc {
     internal sealed class ControlCursors {
         private const int IDC_HAND = 32_649;
         internal const int WM_SETCURSOR = 0x0020;
-        internal static readonly IntPtr SystemHand = LoadCursor(IntPtr.Zero, (IntPtr)IDC_HAND);
-
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        private static extern IntPtr LoadCursor(
-            [In, Optional] IntPtr hInstance,
-            [In] IntPtr lpCursorName
-        );
-
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        internal static extern IntPtr SetCursor(
-            [In, Optional] IntPtr hCursor
-        );
+        internal static readonly IntPtr SystemHand = NativeMethods.LoadCursor(IntPtr.Zero, (IntPtr)IDC_HAND);
     }
 
     internal sealed class HandLabel : Label {
@@ -281,7 +290,7 @@ namespace calc {
             switch (m.Msg) {
                 case ControlCursors.WM_SETCURSOR: {
                     if (Cursor == Cursors.Hand) {
-                        ControlCursors.SetCursor(ControlCursors.SystemHand);
+                        NativeMethods.SetCursor(ControlCursors.SystemHand);
                         m.Result = IntPtr.Zero;
                         return;
                     }
