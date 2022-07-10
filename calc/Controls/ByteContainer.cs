@@ -8,7 +8,6 @@ namespace calc {
         private bool _bigEndian = true;
         private bool _enabled = true;
         private byte _byte = 0x0;
-        private byte endianstorage;
 
         /// <summary>
         /// The byte-order of the container.
@@ -18,25 +17,26 @@ namespace calc {
             set {
                 if (_bigEndian != value) {
                     _bigEndian = value;
-
-                    endianstorage = Byte0.Byte;
-                    Byte0.Byte = Byte7.Byte;
-                    Byte7.Byte = endianstorage;
-
-                    endianstorage = Byte1.Byte;
-                    Byte1.Byte = Byte6.Byte;
-                    Byte6.Byte = endianstorage;
-
-                    endianstorage = Byte2.Byte;
-                    Byte2.Byte = Byte5.Byte;
-                    Byte5.Byte = endianstorage;
-
-                    endianstorage = Byte3.Byte;
-                    Byte3.Byte = Byte4.Byte;
-                    Byte4.Byte = endianstorage;
-
-                    endianstorage = 0x0;
-                    ParseByte();
+                    if (value) {
+                        Byte0.Text = _byte.GetBit(7).ToString();
+                        Byte1.Text = _byte.GetBit(6).ToString();
+                        Byte2.Text = _byte.GetBit(5).ToString();
+                        Byte3.Text = _byte.GetBit(4).ToString();
+                        Byte4.Text = _byte.GetBit(3).ToString();
+                        Byte5.Text = _byte.GetBit(2).ToString();
+                        Byte6.Text = _byte.GetBit(1).ToString();
+                        Byte7.Text = _byte.GetBit(0).ToString();
+                    }
+                    else {
+                        Byte0.Text = _byte.GetBit(0).ToString();
+                        Byte1.Text = _byte.GetBit(1).ToString();
+                        Byte2.Text = _byte.GetBit(2).ToString();
+                        Byte3.Text = _byte.GetBit(3).ToString();
+                        Byte4.Text = _byte.GetBit(4).ToString();
+                        Byte5.Text = _byte.GetBit(5).ToString();
+                        Byte6.Text = _byte.GetBit(6).ToString();
+                        Byte7.Text = _byte.GetBit(7).ToString();
+                    }
                 }
             }
         }
@@ -46,14 +46,14 @@ namespace calc {
             get => _enabled;
             set {
                 _enabled = value;
-                Byte0.ForeColor = value ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDarkDark);
-                Byte1.ForeColor = value ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDarkDark);
-                Byte2.ForeColor = value ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDarkDark);
-                Byte3.ForeColor = value ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDarkDark);
-                Byte4.ForeColor = value ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDarkDark);
-                Byte5.ForeColor = value ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDarkDark);
-                Byte6.ForeColor = value ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDarkDark);
-                Byte7.ForeColor = value ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDarkDark);
+                //Byte0.ForeColor = value ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDarkDark);
+                //Byte1.ForeColor = value ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDarkDark);
+                //Byte2.ForeColor = value ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDarkDark);
+                //Byte3.ForeColor = value ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDarkDark);
+                //Byte4.ForeColor = value ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDarkDark);
+                //Byte5.ForeColor = value ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDarkDark);
+                //Byte6.ForeColor = value ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDarkDark);
+                //Byte7.ForeColor = value ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDarkDark);
                 Byte0.Enabled = value;
                 Byte1.Enabled = value;
                 Byte2.Enabled = value;
@@ -103,41 +103,38 @@ namespace calc {
             set {
                 _byte = value;
                 if (_bigEndian) {
-                    Byte0.Byte = (byte)((value >> 7) & 1);
-                    Byte1.Byte = (byte)((value >> 6) & 1);
-                    Byte2.Byte = (byte)((value >> 5) & 1);
-                    Byte3.Byte = (byte)((value >> 4) & 1);
-                    Byte4.Byte = (byte)((value >> 3) & 1);
-                    Byte5.Byte = (byte)((value >> 2) & 1);
-                    Byte6.Byte = (byte)((value >> 1) & 1);
-                    Byte7.Byte = (byte)((value >> 0) & 1);
+                    Byte0.Text = _byte.GetBit(7).ToString();
+                    Byte1.Text = _byte.GetBit(6).ToString();
+                    Byte2.Text = _byte.GetBit(5).ToString();
+                    Byte3.Text = _byte.GetBit(4).ToString();
+                    Byte4.Text = _byte.GetBit(3).ToString();
+                    Byte5.Text = _byte.GetBit(2).ToString();
+                    Byte6.Text = _byte.GetBit(1).ToString();
+                    Byte7.Text = _byte.GetBit(0).ToString();
                 }
                 else {
-                    Byte0.Byte = (byte)((value >> 0) & 1);
-                    Byte1.Byte = (byte)((value >> 1) & 1);
-                    Byte2.Byte = (byte)((value >> 2) & 1);
-                    Byte3.Byte = (byte)((value >> 3) & 1);
-                    Byte4.Byte = (byte)((value >> 4) & 1);
-                    Byte5.Byte = (byte)((value >> 5) & 1);
-                    Byte6.Byte = (byte)((value >> 6) & 1);
-                    Byte7.Byte = (byte)((value >> 7) & 1);
+                    Byte0.Text = _byte.GetBit(0).ToString();
+                    Byte1.Text = _byte.GetBit(1).ToString();
+                    Byte2.Text = _byte.GetBit(2).ToString();
+                    Byte3.Text = _byte.GetBit(3).ToString();
+                    Byte4.Text = _byte.GetBit(4).ToString();
+                    Byte5.Text = _byte.GetBit(5).ToString();
+                    Byte6.Text = _byte.GetBit(6).ToString();
+                    Byte7.Text = _byte.GetBit(7).ToString();
                 }
+                BitChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
         public string ByteString => Byte.ToString("X2");
 
-        public event EventHandler<EventArgs> BytesParsed;
+        public event EventHandler<EventArgs> BitChanged;
 
-        // B7 B6 B5 B4 | B3 B2 B1 B0
-
-        // 0xXF (Big) / 0xFX (Little)
         private readonly HandLabel Byte0 = new() { Text = "0", BackColor = Color.Transparent, TextAlign = ContentAlignment.MiddleCenter, AutoSize = false, Cursor = Cursors.Hand };
         private readonly HandLabel Byte1 = new() { Text = "0", BackColor = Color.Transparent, TextAlign = ContentAlignment.MiddleCenter, AutoSize = false, Cursor = Cursors.Hand };
         private readonly HandLabel Byte2 = new() { Text = "0", BackColor = Color.Transparent, TextAlign = ContentAlignment.MiddleCenter, AutoSize = false, Cursor = Cursors.Hand };
         private readonly HandLabel Byte3 = new() { Text = "0", BackColor = Color.Transparent, TextAlign = ContentAlignment.MiddleCenter, AutoSize = false, Cursor = Cursors.Hand };
 
-        // 0xFX (Big) / 0xXF (Little)
         private readonly HandLabel Byte4 = new() { Text = "0", BackColor = Color.Transparent, TextAlign = ContentAlignment.MiddleCenter, AutoSize = false, Cursor = Cursors.Hand };
         private readonly HandLabel Byte5 = new() { Text = "0", BackColor = Color.Transparent, TextAlign = ContentAlignment.MiddleCenter, AutoSize = false, Cursor = Cursors.Hand };
         private readonly HandLabel Byte6 = new() { Text = "0", BackColor = Color.Transparent, TextAlign = ContentAlignment.MiddleCenter, AutoSize = false, Cursor = Cursors.Hand };
@@ -145,22 +142,102 @@ namespace calc {
 
         public ByteContainer() {
             Controls.Add(Byte0);
-            Byte0.MouseDown += (s, e) => { ParseByte(); };
+            Byte0.MouseDown += (s, e) => {
+                if (_bigEndian) {
+                    _byte = _byte.FlipBit(7);
+                    Byte0.Text = _byte.GetBit(7).ToString();
+                }
+                else {
+                    _byte = _byte.FlipBit(0);
+                    Byte0.Text = _byte.GetBit(0).ToString();
+                }
+                BitChanged?.Invoke(this, EventArgs.Empty);
+            };
             Controls.Add(Byte1);
-            Byte1.MouseDown += (s, e) => { ParseByte(); };
+            Byte1.MouseDown += (s, e) => {
+                if (_bigEndian) {
+                    _byte = _byte.FlipBit(6);
+                    Byte1.Text = _byte.GetBit(6).ToString();
+                }
+                else {
+                    _byte = _byte.FlipBit(1);
+                    Byte1.Text = _byte.GetBit(1).ToString();
+                }
+                BitChanged?.Invoke(this, EventArgs.Empty);
+            };
             Controls.Add(Byte2);
-            Byte2.MouseDown += (s, e) => { ParseByte(); };
+            Byte2.MouseDown += (s, e) => {
+                if (_bigEndian) {
+                    _byte = _byte.FlipBit(5);
+                    Byte2.Text = _byte.GetBit(5).ToString();
+                }
+                else {
+                    _byte = _byte.FlipBit(2);
+                    Byte2.Text = _byte.GetBit(2).ToString();
+                }
+                BitChanged?.Invoke(this, EventArgs.Empty);
+            };
             Controls.Add(Byte3);
-            Byte3.MouseDown += (s, e) => { ParseByte(); };
+            Byte3.MouseDown += (s, e) => {
+                if (_bigEndian) {
+                    _byte = _byte.FlipBit(4);
+                    Byte3.Text = _byte.GetBit(4).ToString();
+                }
+                else {
+                    _byte = _byte.FlipBit(3);
+                    Byte3.Text = _byte.GetBit(3).ToString();
+                }
+                BitChanged?.Invoke(this, EventArgs.Empty);
+            };
 
             Controls.Add(Byte4);
-            Byte4.MouseDown += (s, e) => { ParseByte(); };
+            Byte4.MouseDown += (s, e) => {
+                if (_bigEndian) {
+                    _byte = _byte.FlipBit(3);
+                    Byte4.Text = _byte.GetBit(3).ToString();
+                }
+                else {
+                    _byte = _byte.FlipBit(4);
+                    Byte4.Text = _byte.GetBit(4).ToString();
+                }
+                BitChanged?.Invoke(this, EventArgs.Empty);
+            };
             Controls.Add(Byte5);
-            Byte5.MouseDown += (s, e) => { ParseByte(); };
+            Byte5.MouseDown += (s, e) => {
+                if (_bigEndian) {
+                    _byte = _byte.FlipBit(2);
+                    Byte5.Text = _byte.GetBit(2).ToString();
+                }
+                else {
+                    _byte = _byte.FlipBit(5);
+                    Byte5.Text = _byte.GetBit(5).ToString();
+                }
+                BitChanged?.Invoke(this, EventArgs.Empty);
+            };
             Controls.Add(Byte6);
-            Byte6.MouseDown += (s, e) => { ParseByte(); };
+            Byte6.MouseDown += (s, e) => {
+                if (_bigEndian) {
+                    _byte = _byte.FlipBit(1);
+                    Byte6.Text = _byte.GetBit(1).ToString();
+                }
+                else {
+                    _byte = _byte.FlipBit(6);
+                    Byte6.Text = _byte.GetBit(6).ToString();
+                }
+                BitChanged?.Invoke(this, EventArgs.Empty);
+            };
             Controls.Add(Byte7);
-            Byte7.MouseDown += (s, e) => { ParseByte(); };
+            Byte7.MouseDown += (s, e) => {
+                if (_bigEndian) {
+                    _byte = _byte.FlipBit(0);
+                    Byte7.Text = _byte.GetBit(0).ToString();
+                }
+                else {
+                    _byte = _byte.FlipBit(7);
+                    Byte7.Text = _byte.GetBit(7).ToString();
+                }
+                BitChanged?.Invoke(this, EventArgs.Empty);
+            };
             this.Font = new("Consolas", 12);
             ResizeControl();
         }
@@ -217,33 +294,6 @@ namespace calc {
             );
         }
 
-        private void ParseByte() {
-            if (this.IsHandleCreated) {
-                _byte = IntegralConversions.GetByte($"{Byte0.Text}{Byte1.Text}{Byte2.Text}{Byte3.Text}{Byte4.Text}{Byte5.Text}{Byte6.Text}{Byte7.Text}", BigEndian);
-                //if (BigEndian) {
-                //    _byte = (byte)(Byte & ~(1 << 7) | (Byte0.Byte << 7));
-                //    _byte = (byte)(Byte & ~(1 << 6) | (Byte1.Byte << 6));
-                //    _byte = (byte)(Byte & ~(1 << 5) | (Byte2.Byte << 5));
-                //    _byte = (byte)(Byte & ~(1 << 4) | (Byte3.Byte << 4));
-                //    _byte = (byte)(Byte & ~(1 << 3) | (Byte4.Byte << 3));
-                //    _byte = (byte)(Byte & ~(1 << 2) | (Byte5.Byte << 2));
-                //    _byte = (byte)(Byte & ~(1 << 1) | (Byte6.Byte << 1));
-                //    _byte = (byte)(Byte & ~(1 << 0) | (Byte7.Byte << 0));
-                //}
-                //else {
-                //    _byte = (byte)(Byte & ~(1 << 0) | (Byte0.Byte << 0));
-                //    _byte = (byte)(Byte & ~(1 << 1) | (Byte1.Byte << 1));
-                //    _byte = (byte)(Byte & ~(1 << 2) | (Byte2.Byte << 2));
-                //    _byte = (byte)(Byte & ~(1 << 3) | (Byte3.Byte << 3));
-                //    _byte = (byte)(Byte & ~(1 << 4) | (Byte4.Byte << 4));
-                //    _byte = (byte)(Byte & ~(1 << 5) | (Byte5.Byte << 5));
-                //    _byte = (byte)(Byte & ~(1 << 6) | (Byte6.Byte << 6));
-                //    _byte = (byte)(Byte & ~(1 << 7) | (Byte7.Byte << 7));
-                //}
-                BytesParsed?.Invoke(this, EventArgs.Empty);
-            }
-        }
-
     }
 
     internal sealed class ControlCursors {
@@ -253,38 +303,6 @@ namespace calc {
     }
 
     internal sealed class HandLabel : Label {
-        private byte _byte = 0x0;
-        internal byte Byte {
-            get => _byte;
-            set {
-                switch (value) {
-                    case 0x1: {
-                        this.Text = "1";
-                        _byte = 0x1;
-                    } break;
-
-                    default: {
-                        this.Text = "0";
-                        _byte = 0x0;
-                    } break;
-                }
-            }
-        }
-        protected override void OnMouseDown(MouseEventArgs e) {
-            if (e.Button == MouseButtons.Left) {
-                switch (Byte) {
-                    case 0x0: {
-                        _byte = 0x1;
-                        this.Text = "1";
-                    } break;
-                    default: {
-                        _byte = 0x0;
-                        this.Text = "0";
-                    } break;
-                }
-            }
-            base.OnMouseDown(e);
-        }
         [System.Diagnostics.DebuggerStepThrough]
         protected override void WndProc(ref Message m) {
             switch (m.Msg) {

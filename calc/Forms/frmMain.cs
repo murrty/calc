@@ -14,6 +14,7 @@ namespace calc {
         private string KeyDataValue = "";
         private IntegerType DataType = IntegerType.Int32;
         private CalculatorAction CalcAction = CalculatorAction.None;
+        private bool FlippingBits = false;
 
         public frmMain() {
             InitializeComponent();
@@ -23,6 +24,10 @@ namespace calc {
             DecimalIdentifier = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
             btnDecimal.Text = DecimalIdentifier;
             this.Load += (s, e) => {
+                if (Program.DebugMode) {
+                    this.StartPosition = FormStartPosition.CenterScreen;
+                    return;
+                }
                 if (Ini.KeyExists("Location")) {
                     try {
                         // ReadPoint will throw if the point is a wrong value.
@@ -83,11 +88,13 @@ namespace calc {
                 }
             };
             this.FormClosing += (s, e) => {
-                if (this.Location != Ini.SavedLocation) {
-                    Ini.Write("Location", this.Location);
-                }
-                if (DataType != Ini.SavedIntegerType) {
-                    Ini.Write("IntegerType", DataType.ToString());
+                if (!Program.DebugMode) {
+                    if (this.Location != Ini.SavedLocation) {
+                        Ini.Write("Location", this.Location);
+                    }
+                    if (DataType != Ini.SavedIntegerType) {
+                        Ini.Write("IntegerType", DataType.ToString());
+                    }
                 }
             };
         }
@@ -194,8 +201,10 @@ namespace calc {
         }
 
         private void BitSet(object sender, EventArgs e) {
-            GetHex();
-            GetValue();
+            if (!FlippingBits) {
+                GetHex();
+                GetValue();
+            }
         }
         private void GetValue() {
             if (mBigEndian.Checked) {
@@ -2114,6 +2123,60 @@ namespace calc {
             GetHex();
             lbUpper.Focus();
         }
+        private void btnFlipBits_Click(object sender, EventArgs e) {
+            FlippingBits = true;
+            if (mBigEndian.Checked) {
+                bcBytes8.Byte = bcBytes8.Byte.InvertByte();
+                switch (DataType) {
+                    case IntegerType.Int16 or IntegerType.UInt16: {
+                        bcBytes7.Byte = bcBytes7.Byte.InvertByte();
+                    } break;
+
+                    case IntegerType.Int32 or IntegerType.UInt32 or IntegerType.Single: {
+                        bcBytes7.Byte = bcBytes7.Byte.InvertByte();
+                        bcBytes6.Byte = bcBytes6.Byte.InvertByte();
+                        bcBytes5.Byte = bcBytes5.Byte.InvertByte();
+                    } break;
+
+                    case IntegerType.Int64 or IntegerType.UInt64 or IntegerType.Double: {
+                        bcBytes7.Byte = bcBytes7.Byte.InvertByte();
+                        bcBytes6.Byte = bcBytes6.Byte.InvertByte();
+                        bcBytes5.Byte = bcBytes5.Byte.InvertByte();
+                        bcBytes4.Byte = bcBytes4.Byte.InvertByte();
+                        bcBytes3.Byte = bcBytes3.Byte.InvertByte();
+                        bcBytes2.Byte = bcBytes2.Byte.InvertByte();
+                        bcBytes1.Byte = bcBytes1.Byte.InvertByte();
+                    } break;
+                }
+            }
+            else {
+                bcBytes1.Byte = bcBytes1.Byte.InvertByte();
+                switch (DataType) {
+                    case IntegerType.Int16 or IntegerType.UInt16: {
+                        bcBytes2.Byte = bcBytes2.Byte.InvertByte();
+                    } break;
+
+                    case IntegerType.Int32 or IntegerType.UInt32 or IntegerType.Single: {
+                        bcBytes2.Byte = bcBytes2.Byte.InvertByte();
+                        bcBytes3.Byte = bcBytes2.Byte.InvertByte();
+                        bcBytes4.Byte = bcBytes3.Byte.InvertByte();
+                    } break;
+
+                    case IntegerType.Int64 or IntegerType.UInt64 or IntegerType.Double: {
+                        bcBytes2.Byte = bcBytes2.Byte.InvertByte();
+                        bcBytes3.Byte = bcBytes3.Byte.InvertByte();
+                        bcBytes4.Byte = bcBytes4.Byte.InvertByte();
+                        bcBytes5.Byte = bcBytes5.Byte.InvertByte();
+                        bcBytes6.Byte = bcBytes6.Byte.InvertByte();
+                        bcBytes7.Byte = bcBytes7.Byte.InvertByte();
+                        bcBytes8.Byte = bcBytes8.Byte.InvertByte();
+                    } break;
+                }
+            }
+            FlippingBits = false;
+            BitSet(null, null);
+            lbUpper.Focus();
+        }
 
         private void btnDecimal_Click(object sender, EventArgs e) {
             if (rbDouble.Checked || rbSingle.Checked) {
@@ -2243,5 +2306,6 @@ namespace calc {
             }
             lbUpper.Focus();
         }
+
     }
 }

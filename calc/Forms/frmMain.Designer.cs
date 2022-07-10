@@ -85,14 +85,6 @@
             this.lbBytesLittle1 = new System.Windows.Forms.Label();
             this.lbBytesBig8 = new System.Windows.Forms.Label();
             this.lbBytesBig4 = new System.Windows.Forms.Label();
-            this.bcBytes1 = new calc.ByteContainer();
-            this.bcBytes4 = new calc.ByteContainer();
-            this.bcBytes5 = new calc.ByteContainer();
-            this.bcBytes8 = new calc.ByteContainer();
-            this.bcBytes2 = new calc.ByteContainer();
-            this.bcBytes6 = new calc.ByteContainer();
-            this.bcBytes7 = new calc.ByteContainer();
-            this.bcBytes3 = new calc.ByteContainer();
             this.cmUpper = new System.Windows.Forms.ContextMenu();
             this.mUpperData = new System.Windows.Forms.MenuItem();
             this.mUpperSeparator = new System.Windows.Forms.MenuItem();
@@ -114,9 +106,17 @@
             this.btnSquare = new System.Windows.Forms.Button();
             this.btnCube = new System.Windows.Forms.Button();
             this.btnExponent = new System.Windows.Forms.Button();
-            this.btnUnused1 = new System.Windows.Forms.Button();
+            this.btnFlipBits = new System.Windows.Forms.Button();
             this.btnUnused2 = new System.Windows.Forms.Button();
             this.btnUnused3 = new System.Windows.Forms.Button();
+            this.bcBytes1 = new calc.ByteContainer();
+            this.bcBytes4 = new calc.ByteContainer();
+            this.bcBytes5 = new calc.ByteContainer();
+            this.bcBytes8 = new calc.ByteContainer();
+            this.bcBytes2 = new calc.ByteContainer();
+            this.bcBytes6 = new calc.ByteContainer();
+            this.bcBytes7 = new calc.ByteContainer();
+            this.bcBytes3 = new calc.ByteContainer();
             this.gbType.SuspendLayout();
             this.gbOutput.SuspendLayout();
             this.pnOuput.SuspendLayout();
@@ -905,98 +905,6 @@
             this.lbBytesBig4.TabIndex = 19;
             this.lbBytesBig4.Text = "40";
             // 
-            // bcBytes1
-            // 
-            this.bcBytes1.BigEndian = true;
-            this.bcBytes1.Byte = ((byte)(0));
-            this.bcBytes1.Enabled = false;
-            this.bcBytes1.Font = new System.Drawing.Font("Consolas", 12F);
-            this.bcBytes1.Location = new System.Drawing.Point(2, 8);
-            this.bcBytes1.Name = "bcBytes1";
-            this.bcBytes1.Size = new System.Drawing.Size(94, 27);
-            this.bcBytes1.TabIndex = 13;
-            this.bcBytes1.BytesParsed += new System.EventHandler<System.EventArgs>(this.BitSet);
-            // 
-            // bcBytes4
-            // 
-            this.bcBytes4.BigEndian = true;
-            this.bcBytes4.Byte = ((byte)(0));
-            this.bcBytes4.Enabled = false;
-            this.bcBytes4.Font = new System.Drawing.Font("Consolas", 12F);
-            this.bcBytes4.Location = new System.Drawing.Point(290, 8);
-            this.bcBytes4.Name = "bcBytes4";
-            this.bcBytes4.Size = new System.Drawing.Size(94, 27);
-            this.bcBytes4.TabIndex = 10;
-            this.bcBytes4.BytesParsed += new System.EventHandler<System.EventArgs>(this.BitSet);
-            // 
-            // bcBytes5
-            // 
-            this.bcBytes5.BigEndian = true;
-            this.bcBytes5.Byte = ((byte)(0));
-            this.bcBytes5.Font = new System.Drawing.Font("Consolas", 12F);
-            this.bcBytes5.Location = new System.Drawing.Point(2, 39);
-            this.bcBytes5.Name = "bcBytes5";
-            this.bcBytes5.Size = new System.Drawing.Size(94, 27);
-            this.bcBytes5.TabIndex = 9;
-            this.bcBytes5.BytesParsed += new System.EventHandler<System.EventArgs>(this.BitSet);
-            // 
-            // bcBytes8
-            // 
-            this.bcBytes8.BigEndian = true;
-            this.bcBytes8.Byte = ((byte)(0));
-            this.bcBytes8.Font = new System.Drawing.Font("Consolas", 12F);
-            this.bcBytes8.Location = new System.Drawing.Point(290, 39);
-            this.bcBytes8.Name = "bcBytes8";
-            this.bcBytes8.Size = new System.Drawing.Size(94, 27);
-            this.bcBytes8.TabIndex = 0;
-            this.bcBytes8.BytesParsed += new System.EventHandler<System.EventArgs>(this.BitSet);
-            // 
-            // bcBytes2
-            // 
-            this.bcBytes2.BigEndian = true;
-            this.bcBytes2.Byte = ((byte)(0));
-            this.bcBytes2.Enabled = false;
-            this.bcBytes2.Font = new System.Drawing.Font("Consolas", 12F);
-            this.bcBytes2.Location = new System.Drawing.Point(98, 8);
-            this.bcBytes2.Name = "bcBytes2";
-            this.bcBytes2.Size = new System.Drawing.Size(94, 27);
-            this.bcBytes2.TabIndex = 12;
-            this.bcBytes2.BytesParsed += new System.EventHandler<System.EventArgs>(this.BitSet);
-            // 
-            // bcBytes6
-            // 
-            this.bcBytes6.BigEndian = true;
-            this.bcBytes6.Byte = ((byte)(0));
-            this.bcBytes6.Font = new System.Drawing.Font("Consolas", 12F);
-            this.bcBytes6.Location = new System.Drawing.Point(98, 39);
-            this.bcBytes6.Name = "bcBytes6";
-            this.bcBytes6.Size = new System.Drawing.Size(94, 27);
-            this.bcBytes6.TabIndex = 8;
-            this.bcBytes6.BytesParsed += new System.EventHandler<System.EventArgs>(this.BitSet);
-            // 
-            // bcBytes7
-            // 
-            this.bcBytes7.BigEndian = true;
-            this.bcBytes7.Byte = ((byte)(0));
-            this.bcBytes7.Font = new System.Drawing.Font("Consolas", 12F);
-            this.bcBytes7.Location = new System.Drawing.Point(194, 39);
-            this.bcBytes7.Name = "bcBytes7";
-            this.bcBytes7.Size = new System.Drawing.Size(94, 27);
-            this.bcBytes7.TabIndex = 1;
-            this.bcBytes7.BytesParsed += new System.EventHandler<System.EventArgs>(this.BitSet);
-            // 
-            // bcBytes3
-            // 
-            this.bcBytes3.BigEndian = true;
-            this.bcBytes3.Byte = ((byte)(0));
-            this.bcBytes3.Enabled = false;
-            this.bcBytes3.Font = new System.Drawing.Font("Consolas", 12F);
-            this.bcBytes3.Location = new System.Drawing.Point(194, 8);
-            this.bcBytes3.Name = "bcBytes3";
-            this.bcBytes3.Size = new System.Drawing.Size(94, 27);
-            this.bcBytes3.TabIndex = 11;
-            this.bcBytes3.BytesParsed += new System.EventHandler<System.EventArgs>(this.BitSet);
-            // 
             // cmUpper
             // 
             this.cmUpper.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
@@ -1188,16 +1096,17 @@
             this.btnExponent.UseVisualStyleBackColor = true;
             this.btnExponent.Click += new System.EventHandler(this.btnExponent_Click);
             // 
-            // btnUnused1
+            // btnFlipBits
             // 
-            this.btnUnused1.Enabled = false;
-            this.btnUnused1.Font = new System.Drawing.Font("Courier New", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnUnused1.Location = new System.Drawing.Point(339, 244);
-            this.btnUnused1.Name = "btnUnused1";
-            this.btnUnused1.Size = new System.Drawing.Size(40, 30);
-            this.btnUnused1.TabIndex = 75;
-            this.btnUnused1.UseVisualStyleBackColor = true;
-            this.btnUnused1.Visible = false;
+            this.btnFlipBits.Font = new System.Drawing.Font("Courier New", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnFlipBits.Location = new System.Drawing.Point(339, 244);
+            this.btnFlipBits.Name = "btnFlipBits";
+            this.btnFlipBits.Size = new System.Drawing.Size(40, 30);
+            this.btnFlipBits.TabIndex = 75;
+            this.btnFlipBits.Text = "^";
+            this.btnFlipBits.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.btnFlipBits.UseVisualStyleBackColor = true;
+            this.btnFlipBits.Click += new System.EventHandler(this.btnFlipBits_Click);
             // 
             // btnUnused2
             // 
@@ -1221,6 +1130,98 @@
             this.btnUnused3.UseVisualStyleBackColor = true;
             this.btnUnused3.Visible = false;
             // 
+            // bcBytes1
+            // 
+            this.bcBytes1.BigEndian = true;
+            this.bcBytes1.Byte = ((byte)(0));
+            this.bcBytes1.Enabled = false;
+            this.bcBytes1.Font = new System.Drawing.Font("Consolas", 12F);
+            this.bcBytes1.Location = new System.Drawing.Point(2, 8);
+            this.bcBytes1.Name = "bcBytes1";
+            this.bcBytes1.Size = new System.Drawing.Size(94, 27);
+            this.bcBytes1.TabIndex = 13;
+            this.bcBytes1.BitChanged += new System.EventHandler<System.EventArgs>(this.BitSet);
+            // 
+            // bcBytes4
+            // 
+            this.bcBytes4.BigEndian = true;
+            this.bcBytes4.Byte = ((byte)(0));
+            this.bcBytes4.Enabled = false;
+            this.bcBytes4.Font = new System.Drawing.Font("Consolas", 12F);
+            this.bcBytes4.Location = new System.Drawing.Point(290, 8);
+            this.bcBytes4.Name = "bcBytes4";
+            this.bcBytes4.Size = new System.Drawing.Size(94, 27);
+            this.bcBytes4.TabIndex = 10;
+            this.bcBytes4.BitChanged += new System.EventHandler<System.EventArgs>(this.BitSet);
+            // 
+            // bcBytes5
+            // 
+            this.bcBytes5.BigEndian = true;
+            this.bcBytes5.Byte = ((byte)(0));
+            this.bcBytes5.Font = new System.Drawing.Font("Consolas", 12F);
+            this.bcBytes5.Location = new System.Drawing.Point(2, 39);
+            this.bcBytes5.Name = "bcBytes5";
+            this.bcBytes5.Size = new System.Drawing.Size(94, 27);
+            this.bcBytes5.TabIndex = 9;
+            this.bcBytes5.BitChanged += new System.EventHandler<System.EventArgs>(this.BitSet);
+            // 
+            // bcBytes8
+            // 
+            this.bcBytes8.BigEndian = true;
+            this.bcBytes8.Byte = ((byte)(0));
+            this.bcBytes8.Font = new System.Drawing.Font("Consolas", 12F);
+            this.bcBytes8.Location = new System.Drawing.Point(290, 39);
+            this.bcBytes8.Name = "bcBytes8";
+            this.bcBytes8.Size = new System.Drawing.Size(94, 27);
+            this.bcBytes8.TabIndex = 0;
+            this.bcBytes8.BitChanged += new System.EventHandler<System.EventArgs>(this.BitSet);
+            // 
+            // bcBytes2
+            // 
+            this.bcBytes2.BigEndian = true;
+            this.bcBytes2.Byte = ((byte)(0));
+            this.bcBytes2.Enabled = false;
+            this.bcBytes2.Font = new System.Drawing.Font("Consolas", 12F);
+            this.bcBytes2.Location = new System.Drawing.Point(98, 8);
+            this.bcBytes2.Name = "bcBytes2";
+            this.bcBytes2.Size = new System.Drawing.Size(94, 27);
+            this.bcBytes2.TabIndex = 12;
+            this.bcBytes2.BitChanged += new System.EventHandler<System.EventArgs>(this.BitSet);
+            // 
+            // bcBytes6
+            // 
+            this.bcBytes6.BigEndian = true;
+            this.bcBytes6.Byte = ((byte)(0));
+            this.bcBytes6.Font = new System.Drawing.Font("Consolas", 12F);
+            this.bcBytes6.Location = new System.Drawing.Point(98, 39);
+            this.bcBytes6.Name = "bcBytes6";
+            this.bcBytes6.Size = new System.Drawing.Size(94, 27);
+            this.bcBytes6.TabIndex = 8;
+            this.bcBytes6.BitChanged += new System.EventHandler<System.EventArgs>(this.BitSet);
+            // 
+            // bcBytes7
+            // 
+            this.bcBytes7.BigEndian = true;
+            this.bcBytes7.Byte = ((byte)(0));
+            this.bcBytes7.Font = new System.Drawing.Font("Consolas", 12F);
+            this.bcBytes7.Location = new System.Drawing.Point(194, 39);
+            this.bcBytes7.Name = "bcBytes7";
+            this.bcBytes7.Size = new System.Drawing.Size(94, 27);
+            this.bcBytes7.TabIndex = 1;
+            this.bcBytes7.BitChanged += new System.EventHandler<System.EventArgs>(this.BitSet);
+            // 
+            // bcBytes3
+            // 
+            this.bcBytes3.BigEndian = true;
+            this.bcBytes3.Byte = ((byte)(0));
+            this.bcBytes3.Enabled = false;
+            this.bcBytes3.Font = new System.Drawing.Font("Consolas", 12F);
+            this.bcBytes3.Location = new System.Drawing.Point(194, 8);
+            this.bcBytes3.Name = "bcBytes3";
+            this.bcBytes3.Size = new System.Drawing.Size(94, 27);
+            this.bcBytes3.TabIndex = 11;
+            this.bcBytes3.BitChanged += new System.EventHandler<System.EventArgs>(this.BitSet);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1229,7 +1230,7 @@
             this.ClientSize = new System.Drawing.Size(394, 385);
             this.Controls.Add(this.btnUnused3);
             this.Controls.Add(this.btnUnused2);
-            this.Controls.Add(this.btnUnused1);
+            this.Controls.Add(this.btnFlipBits);
             this.Controls.Add(this.btnExponent);
             this.Controls.Add(this.btnCube);
             this.Controls.Add(this.btnSquare);
@@ -1386,7 +1387,7 @@
         private System.Windows.Forms.Button btnSquare;
         private System.Windows.Forms.Button btnCube;
         private System.Windows.Forms.Button btnExponent;
-        private System.Windows.Forms.Button btnUnused1;
+        private System.Windows.Forms.Button btnFlipBits;
         private System.Windows.Forms.Button btnUnused2;
         private System.Windows.Forms.Button btnUnused3;
         private System.Windows.Forms.MenuItem mAbout;
