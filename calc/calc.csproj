@@ -69,23 +69,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ByteContainer.cs">
+    <Compile Include="Classes\Ini.cs" />
+    <Compile Include="Classes\NativeMethods.cs" />
+    <Compile Include="Controls\ByteContainer.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="CalculatorAction.cs" />
-    <Compile Include="frmMain.cs">
+    <Compile Include="Classes\CalculatorAction.cs" />
+    <Compile Include="Forms\frmMain.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmMain.Designer.cs">
+    <Compile Include="Forms\frmMain.Designer.cs">
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
     <Compile Include="GlobalNamespaces.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="IntegerType.cs" />
-    <Compile Include="IntegralConversions.cs" />
+    <Compile Include="Classes\IntegerType.cs" />
+    <Compile Include="Classes\IntegralConversions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="frmMain.resx">
+    <EmbeddedResource Include="Forms\frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">

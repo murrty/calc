@@ -58,6 +58,7 @@ namespace calc {
             if (DebugMode || !SingleInstance || (Instance = new(true, ProgramGUID.Value)).WaitOne(TimeSpan.Zero, true)) {
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
+                Ini.Initialize();
                 Application.Run(new frmMain());
                 if (!DebugMode && SingleInstance) {
                     Instance.ReleaseMutex();
