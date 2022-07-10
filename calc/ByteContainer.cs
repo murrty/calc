@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+using System;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -249,7 +250,18 @@ namespace calc {
     internal sealed class ControlCursors {
         private const int IDC_HAND = 32_649;
         internal const int WM_SETCURSOR = 0x0020;
-        internal static readonly IntPtr SystemHand = NativeMethods.LoadCursor(IntPtr.Zero, (IntPtr)IDC_HAND);
+        internal static readonly IntPtr SystemHand = LoadCursor(IntPtr.Zero, (IntPtr)IDC_HAND);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        private static extern IntPtr LoadCursor(
+            [In, Optional] IntPtr hInstance,
+            [In] IntPtr lpCursorName
+        );
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        internal static extern IntPtr SetCursor(
+            [In, Optional] IntPtr hCursor
+        );
     }
 
     internal sealed class HandLabel : Label {
@@ -290,7 +302,7 @@ namespace calc {
             switch (m.Msg) {
                 case ControlCursors.WM_SETCURSOR: {
                     if (Cursor == Cursors.Hand) {
-                        NativeMethods.SetCursor(ControlCursors.SystemHand);
+                        ControlCursors.SetCursor(ControlCursors.SystemHand);
                         m.Result = IntPtr.Zero;
                         return;
                     }
