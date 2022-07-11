@@ -2,6 +2,8 @@
 using System.IO;
 using System.Windows.Forms;
 
+using murrty.extensions;
+
 namespace calc {
     public partial class frmMain : Form {
 
@@ -9,12 +11,12 @@ namespace calc {
 
         private byte[] DataBytes = new byte[8];
         private byte[] CalculationBytes;
+        private byte[] CalculationBuffer;
         private string DataHex = "";
         private string DataValue = "";
         private string KeyDataValue = "";
         private IntegerType DataType = IntegerType.Int32;
         private CalculatorAction CalcAction = CalculatorAction.None;
-        private bool FlippingBits = false;
 
         public frmMain() {
             InitializeComponent();
@@ -23,68 +25,97 @@ namespace calc {
             lbLower.ContextMenu = cmLower;
             DecimalIdentifier = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
             btnDecimal.Text = DecimalIdentifier;
+            if (Program.DebugMode) {
+                this.StartPosition = FormStartPosition.CenterScreen;
+            }
             this.Load += (s, e) => {
-                if (Program.DebugMode) {
-                    this.StartPosition = FormStartPosition.CenterScreen;
-                    return;
-                }
-                if (Ini.KeyExists("Location")) {
-                    try {
-                        // ReadPoint will throw if the point is a wrong value.
-                        Ini.SavedLocation = Ini.ReadPoint("Location");
-                        this.Location = Ini.SavedLocation;
+                if (!Program.DebugMode) {
+                    if (Ini.KeyExists("SystemCalc") && Ini.ReadBool("SystemCalc")) {
+                        this.Dispose();
+                        return;
                     }
-                    catch { }
-                }
-                if (Ini.KeyExists("IntegerType")) {
-                    try {
-                        // ReadPoint will throw if the point is a wrong value.
-                        Ini.SavedIntegerType = Ini.ReadIntType("IntegerType");
-                        DataType = Ini.SavedIntegerType;
-                        switch (Ini.SavedIntegerType) {
-                            case IntegerType.Byte: {
-                                chkSigned.Checked = false;
-                                rbByte.Checked = true;
-                            } break;
-                            case IntegerType.SByte: {
-                                chkSigned.Checked = true;
-                                rbByte.Checked = true;
-                            } break;
-                            case IntegerType.Int16: {
-                                chkSigned.Checked = true;
-                                rbInt16.Checked = true;
-                            } break;
-                            case IntegerType.UInt16: {
-                                chkSigned.Checked = false;
-                                rbInt16.Checked = true;
-                            } break;
-                            case IntegerType.Int32: {
-                                chkSigned.Checked = true;
-                                rbInt32.Checked = true;
-                            } break;
-                            case IntegerType.UInt32: {
-                                chkSigned.Checked = false;
-                                rbInt32.Checked = true;
-                            } break;
-                            case IntegerType.Single: {
-                                chkSigned.Checked = false;
-                                rbSingle.Checked = true;
-                            } break;
-                            case IntegerType.Int64: {
-                                chkSigned.Checked = true;
-                                rbInt64.Checked = true;
-                            } break;
-                            case IntegerType.UInt64: {
-                                chkSigned.Checked = false;
-                                rbInt64.Checked = true;
-                            } break;
-                            case IntegerType.Double: {
-                                chkSigned.Checked = false;
-                                rbDouble.Checked = true;
-                            } break;
+                    if (Ini.KeyExists("Location")) {
+                        try {
+                            // ReadPoint will throw if the point is a wrong value.
+                            Ini.SavedLocation = Ini.ReadPoint("Location");
+                            this.Location = Ini.SavedLocation;
                         }
+                        catch { }
+                    }
+                    if (Ini.KeyExists("IntegerType")) {
+                        try {
+                            // ReadPoint will throw if the point is a wrong value.
+                            Ini.SavedIntegerType = Ini.ReadIntType("IntegerType");
+                            DataType = Ini.SavedIntegerType;
+                            switch (Ini.SavedIntegerType) {
+                                case IntegerType.Byte: {
+                                    chkSigned.Checked = false;
+                                    rbByte.Checked = true;
+                                } break;
+                                case IntegerType.SByte: {
+                                    chkSigned.Checked = true;
+                                    rbByte.Checked = true;
+                                } break;
+                                case IntegerType.Int16: {
+                                    chkSigned.Checked = true;
+                                    rbInt16.Checked = true;
+                                } break;
+                                case IntegerType.UInt16: {
+                                    chkSigned.Checked = false;
+                                    rbInt16.Checked = true;
+                                } break;
+                                case IntegerType.Int32: {
+                                    chkSigned.Checked = true;
+                                    rbInt32.Checked = true;
+                                } break;
+                                case IntegerType.UInt32: {
+                                    chkSigned.Checked = false;
+                                    rbInt32.Checked = true;
+                                } break;
+                                case IntegerType.Single: {
+                                    chkSigned.Checked = false;
+                                    rbSingle.Checked = true;
+                                } break;
+                                case IntegerType.Int64: {
+                                    chkSigned.Checked = true;
+                                    rbInt64.Checked = true;
+                                } break;
+                                case IntegerType.UInt64: {
+                                    chkSigned.Checked = false;
+                                    rbInt64.Checked = true;
+                                } break;
+                                case IntegerType.Double: {
+                                    chkSigned.Checked = false;
+                                    rbDouble.Checked = true;
+                                } break;
+                            }
+                        }
+                        catch { }
+                    }
+                    if (Ini.KeyExists("OutputBackColor")) {
+                        try {
+                            Ini.SavedOutputBackgroundColor = pnOutput.BackColor = Ini.ReadColor("OutputBackColor");
+                        }
+                        catch { }
+                    }
+                    if (Ini.KeyExists("BitsBackColor")) {
+                        try {
+                            Ini.SavedBitsBackgroundColor = pnBits.BackColor = Ini.ReadColor("BitsBackColor");
+                        }
+                        catch { }
+                    }
+                    if (Ini.KeyExists("ForeColor")) {
+                        try {
+                            Ini.SavedForeColor = lbUpper.ForeColor = lbAction.ForeColor = bcBytes1.ForeColor = bcBytes2.ForeColor = bcBytes3.ForeColor = bcBytes4.ForeColor = bcBytes5.ForeColor = bcBytes6.ForeColor = bcBytes7.ForeColor = bcBytes8.ForeColor = lbBytesBig1.ForeColor = lbBytesBig2.ForeColor = lbBytesBig3.ForeColor = lbBytesBig4.ForeColor = lbBytesBig5.ForeColor = lbBytesBig6.ForeColor = lbBytesBig7.ForeColor = lbBytesBig8.ForeColor = lbBytesLittle1.ForeColor = lbBytesLittle2.ForeColor = lbBytesLittle3.ForeColor = lbBytesLittle4.ForeColor = lbBytesLittle5.ForeColor = lbBytesLittle6.ForeColor = lbBytesLittle7.ForeColor = lbBytesLittle8.ForeColor = Ini.ReadColor("ForeColor");
+                        }
+                        catch { }
+                    }
+                    if (Ini.KeyExists("FadedForeColor")) {
+                    try {
+                        Ini.SavedFadedForeColor = lbLower.ForeColor = Ini.ReadColor("FadedForeColor");
                     }
                     catch { }
+                }
                 }
             };
             this.FormClosing += (s, e) => {
@@ -94,6 +125,18 @@ namespace calc {
                     }
                     if (DataType != Ini.SavedIntegerType) {
                         Ini.Write("IntegerType", DataType.ToString());
+                    }
+                    if (!Ini.ColorsMatch(Ini.SavedOutputBackgroundColor, pnOutput.BackColor)) {
+                        Ini.Write("OutputBackColor", pnOutput.BackColor);
+                    }
+                    if (!Ini.ColorsMatch(Ini.SavedBitsBackgroundColor, pnBits.BackColor)) {
+                        Ini.Write("BitsBackColor", pnBits.BackColor);
+                    }
+                    if (!Ini.ColorsMatch(Ini.SavedForeColor, lbUpper.ForeColor)) {
+                        Ini.Write("ForeColor", lbUpper.ForeColor);
+                    }
+                    if (!Ini.ColorsMatch(Ini.SavedFadedForeColor, lbLower.ForeColor)) {
+                        Ini.Write("FadedForeColor", lbLower.ForeColor);
                     }
                 }
             };
@@ -201,10 +244,8 @@ namespace calc {
         }
 
         private void BitSet(object sender, EventArgs e) {
-            if (!FlippingBits) {
-                GetHex();
-                GetValue();
-            }
+            GetHex();
+            GetValue();
         }
         private void GetValue() {
             if (mBigEndian.Checked) {
@@ -228,57 +269,100 @@ namespace calc {
                 DataBytes[7] = bcBytes8.Byte;
             }
 
-            object val = IntegralConversions.GetValue(DataBytes, DataType);
-            DataValue = IntegralConversions.GetString(val, mThousandths.Checked);
+            object val;
+            switch (DataType) {
+                case IntegerType.Byte: {
+                    val = DataBytes[0];
+                    DataValue = val.ToString();
+                } break;
+                case IntegerType.SByte: {
+                    val = unchecked((sbyte)DataBytes[0]);
+                    DataValue = val.ToString();
+                } break;
+                case IntegerType.Int16: {
+                    val = BitConverter.ToInt16(DataBytes, 0);
+                    DataValue = ((Int16)val).ToString(mThousandths.Checked ? "#,##0" : "");
+                } break;
+                case IntegerType.UInt16: {
+                    val = BitConverter.ToUInt16(DataBytes, 0);
+                    DataValue = ((UInt16)val).ToString(mThousandths.Checked ? "#,##0" : "");
+                } break;
+                case IntegerType.Int32: {
+                    val = BitConverter.ToInt32(DataBytes, 0);
+                    DataValue = ((Int32)val).ToString(mThousandths.Checked ? "#,##0" : "");
+                } break;
+                case IntegerType.UInt32: {
+                    val = BitConverter.ToUInt32(DataBytes, 0);
+                    DataValue = ((UInt32)val).ToString(mThousandths.Checked ? "#,##0" : "");
+                } break;
+                case IntegerType.Single: {
+                    val = BitConverter.ToSingle(DataBytes, 0);
+                    DataValue = ((Single)val).ToString(mThousandths.Checked ? "#,##0.#########" : "");
+                } break;
+                case IntegerType.Int64: {
+                    val = BitConverter.ToInt64(DataBytes, 0);
+                    DataValue = ((Int64)val).ToString(mThousandths.Checked ? "#,##0" : "");
+                } break;
+                case IntegerType.UInt64: {
+                    val = BitConverter.ToUInt64(DataBytes, 0);
+                    DataValue = ((UInt64)val).ToString(mThousandths.Checked ? "#,##0" : "");
+                } break;
+                case IntegerType.Double: {
+                    val = BitConverter.ToDouble(DataBytes, 0);
+                    DataValue = ((Double)val).ToString(mThousandths.Checked ? "#,##0.###################" : "");
+                } break;
+                default: throw new ArgumentException(nameof(DataType));
+            }
+
+            KeyDataValue = val.ToString();
 
             if (chkHex.Checked) {
                 lbLower.Text = DataValue;
             }
             else {
-                KeyDataValue = val.ToString();
                 lbUpper.Text = DataValue;
             }
 
         }
         private void GetHex() {
             if (mBigEndian.Checked) {
-                DataHex = bcBytes8.ByteString;
+                DataHex = bcBytes8.ByteHexString;
                 if (rbInt16.Checked) {
-                    DataHex = bcBytes7.ByteString + (mThousandths.Checked ? "_" : "") + DataHex;
+                    DataHex = bcBytes7.ByteHexString + (mThousandths.Checked ? "_" : "") + DataHex;
                 }
                 else if (rbInt32.Checked || rbSingle.Checked) {
-                    DataHex = bcBytes7.ByteString + (mThousandths.Checked ? "_" : "") + DataHex;
-                    DataHex = bcBytes6.ByteString + (mThousandths.Checked ? "_" : "") + DataHex;
-                    DataHex = bcBytes5.ByteString + (mThousandths.Checked ? "_" : "") + DataHex;
+                    DataHex = bcBytes7.ByteHexString + (mThousandths.Checked ? "_" : "") + DataHex;
+                    DataHex = bcBytes6.ByteHexString + (mThousandths.Checked ? "_" : "") + DataHex;
+                    DataHex = bcBytes5.ByteHexString + (mThousandths.Checked ? "_" : "") + DataHex;
                 }
                 else if (rbInt64.Checked || rbDouble.Checked) {
-                    DataHex = bcBytes7.ByteString + (mThousandths.Checked ? "_" : "") + DataHex;
-                    DataHex = bcBytes6.ByteString + (mThousandths.Checked ? "_" : "") + DataHex;
-                    DataHex = bcBytes5.ByteString + (mThousandths.Checked ? "_" : "") + DataHex;
-                    DataHex = bcBytes4.ByteString + (mThousandths.Checked ? "_" : "") + DataHex;
-                    DataHex = bcBytes3.ByteString + (mThousandths.Checked ? "_" : "") + DataHex;
-                    DataHex = bcBytes2.ByteString + (mThousandths.Checked ? "_" : "") + DataHex;
-                    DataHex = bcBytes1.ByteString + (mThousandths.Checked ? "_" : "") + DataHex;
+                    DataHex = bcBytes7.ByteHexString + (mThousandths.Checked ? "_" : "") + DataHex;
+                    DataHex = bcBytes6.ByteHexString + (mThousandths.Checked ? "_" : "") + DataHex;
+                    DataHex = bcBytes5.ByteHexString + (mThousandths.Checked ? "_" : "") + DataHex;
+                    DataHex = bcBytes4.ByteHexString + (mThousandths.Checked ? "_" : "") + DataHex;
+                    DataHex = bcBytes3.ByteHexString + (mThousandths.Checked ? "_" : "") + DataHex;
+                    DataHex = bcBytes2.ByteHexString + (mThousandths.Checked ? "_" : "") + DataHex;
+                    DataHex = bcBytes1.ByteHexString + (mThousandths.Checked ? "_" : "") + DataHex;
                 }
             }
             else {
-                DataHex = bcBytes1.ByteString;
+                DataHex = bcBytes1.ByteHexString;
                 if (rbInt16.Checked) {
-                    DataHex = bcBytes2.ByteString + (mThousandths.Checked ? "_" : "") + DataHex;
+                    DataHex = bcBytes2.ByteHexString + (mThousandths.Checked ? "_" : "") + DataHex;
                 }
                 else if (rbInt32.Checked || rbSingle.Checked) {
-                    DataHex = bcBytes2.ByteString + (mThousandths.Checked ? "_" : "") + DataHex;
-                    DataHex = bcBytes3.ByteString + (mThousandths.Checked ? "_" : "") + DataHex;
-                    DataHex = bcBytes4.ByteString + (mThousandths.Checked ? "_" : "") + DataHex;
+                    DataHex = bcBytes2.ByteHexString + (mThousandths.Checked ? "_" : "") + DataHex;
+                    DataHex = bcBytes3.ByteHexString + (mThousandths.Checked ? "_" : "") + DataHex;
+                    DataHex = bcBytes4.ByteHexString + (mThousandths.Checked ? "_" : "") + DataHex;
                 }
                 else if (rbInt64.Checked || rbDouble.Checked) {
-                    DataHex = bcBytes2.ByteString + (mThousandths.Checked ? "_" : "") + DataHex;
-                    DataHex = bcBytes3.ByteString + (mThousandths.Checked ? "_" : "") + DataHex;
-                    DataHex = bcBytes4.ByteString + (mThousandths.Checked ? "_" : "") + DataHex;
-                    DataHex = bcBytes5.ByteString + (mThousandths.Checked ? "_" : "") + DataHex;
-                    DataHex = bcBytes6.ByteString + (mThousandths.Checked ? "_" : "") + DataHex;
-                    DataHex = bcBytes7.ByteString + (mThousandths.Checked ? "_" : "") + DataHex;
-                    DataHex = bcBytes8.ByteString + (mThousandths.Checked ? "_" : "") + DataHex;
+                    DataHex = bcBytes2.ByteHexString + (mThousandths.Checked ? "_" : "") + DataHex;
+                    DataHex = bcBytes3.ByteHexString + (mThousandths.Checked ? "_" : "") + DataHex;
+                    DataHex = bcBytes4.ByteHexString + (mThousandths.Checked ? "_" : "") + DataHex;
+                    DataHex = bcBytes5.ByteHexString + (mThousandths.Checked ? "_" : "") + DataHex;
+                    DataHex = bcBytes6.ByteHexString + (mThousandths.Checked ? "_" : "") + DataHex;
+                    DataHex = bcBytes7.ByteHexString + (mThousandths.Checked ? "_" : "") + DataHex;
+                    DataHex = bcBytes8.ByteHexString + (mThousandths.Checked ? "_" : "") + DataHex;
                 }
             }
 
@@ -286,10 +370,10 @@ namespace calc {
 
             if (chkHex.Checked) {
                 KeyDataValue = DataHex.Replace("_", "");
-                lbUpper.Text = "0x" + (DataHex == "" ? "0" : DataHex);
+                lbUpper.Text = (mAppendHexIdentifier.Checked ? "0x" : "") + (DataHex == "" ? "0" : DataHex);
             }
             else {
-                lbLower.Text = "0x" + (DataHex == "" ? "0" : DataHex);
+                lbLower.Text = (mAppendHexIdentifier.Checked ? "0x" : "") + (DataHex == "" ? "0" : DataHex);
             }
         }
         private void CheckKeyData() {
@@ -573,24 +657,24 @@ namespace calc {
             }
 
             if (mBigEndian.Checked) {
-                bcBytes8.Byte = DataBytes[0];
-                bcBytes7.Byte = DataBytes[1];
-                bcBytes6.Byte = DataBytes[2];
-                bcBytes5.Byte = DataBytes[3];
-                bcBytes4.Byte = DataBytes[4];
-                bcBytes3.Byte = DataBytes[5];
-                bcBytes2.Byte = DataBytes[6];
-                bcBytes1.Byte = DataBytes[7];
+                bcBytes8.SetByte(DataBytes[0]);
+                bcBytes7.SetByte(DataBytes[1]);
+                bcBytes6.SetByte(DataBytes[2]);
+                bcBytes5.SetByte(DataBytes[3]);
+                bcBytes4.SetByte(DataBytes[4]);
+                bcBytes3.SetByte(DataBytes[5]);
+                bcBytes2.SetByte(DataBytes[6]);
+                bcBytes1.SetByte(DataBytes[7]);
             }
             else {
-                bcBytes1.Byte = DataBytes[0];
-                bcBytes2.Byte = DataBytes[1];
-                bcBytes3.Byte = DataBytes[2];
-                bcBytes4.Byte = DataBytes[3];
-                bcBytes5.Byte = DataBytes[4];
-                bcBytes6.Byte = DataBytes[5];
-                bcBytes7.Byte = DataBytes[6];
-                bcBytes8.Byte = DataBytes[7];
+                bcBytes1.SetByte(DataBytes[0]);
+                bcBytes2.SetByte(DataBytes[1]);
+                bcBytes3.SetByte(DataBytes[2]);
+                bcBytes4.SetByte(DataBytes[3]);
+                bcBytes5.SetByte(DataBytes[4]);
+                bcBytes6.SetByte(DataBytes[5]);
+                bcBytes7.SetByte(DataBytes[6]);
+                bcBytes8.SetByte(DataBytes[7]);
             }
 
             GetValue();
@@ -599,6 +683,7 @@ namespace calc {
         private void PerformCalculation() {
             if (CalcAction == CalculatorAction.None) return;
 
+            CalculationBuffer = (byte[])CalculationBytes.Clone();
             switch (DataType) {
                 case IntegerType.Byte: {
                     Byte Calc = CalculationBytes[0];
@@ -607,43 +692,35 @@ namespace calc {
                     switch (CalcAction) {
                         case CalculatorAction.Add: {
                             Result = (Byte)(Calc + Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Subtract: {
                             Result = (Byte)(Calc - Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Divide: {
                             Result = (Byte)(Calc / Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Multiply: {
                             Result = (Byte)(Calc * Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Remainder: {
                             Result = (Byte)(Calc % Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Squared: {
                             Result = (Byte)(Calc * Calc);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Cubed: {
                             Result = (Byte)(Calc * Calc * Calc);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Exponent: {
                             Result = (Byte)Math.Pow(Calc, Calc2);
-                        }
-                        break;
+                        } break;
 
                         default: return;
                     }
@@ -668,8 +745,8 @@ namespace calc {
                         bcBytes7.Byte = 0x0;
                         bcBytes8.Byte = 0x0;
                     }
-                }
-                break;
+                    CalculationBytes = CalculationBuffer;
+                } break;
 
                 case IntegerType.SByte: {
                     SByte Calc = unchecked((sbyte)CalculationBytes[0]);
@@ -678,47 +755,38 @@ namespace calc {
                     switch (CalcAction) {
                         case CalculatorAction.Add: {
                             Result = (SByte)(Calc + Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Subtract: {
                             Result = (SByte)(Calc - Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Divide: {
                             Result = (SByte)(Calc / Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Multiply: {
                             Result = (SByte)(Calc * Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Remainder: {
                             Result = (SByte)(Calc % Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Squared: {
                             Result = (SByte)(Calc * Calc);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Cubed: {
                             Result = (SByte)(Calc * Calc * Calc);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Exponent: {
                             Result = (SByte)Math.Pow(Calc, Calc2);
-                        }
-                        break;
+                        } break;
 
                         default: return;
                     }
-                    CalculationBytes = new byte[8];
                     if (mBigEndian.Checked) {
                         bcBytes8.Byte = (Byte)Result;
                         bcBytes7.Byte = 0x0;
@@ -739,8 +807,8 @@ namespace calc {
                         bcBytes7.Byte = 0x0;
                         bcBytes8.Byte = 0x0;
                     }
-                }
-                break;
+                    CalculationBytes = CalculationBuffer;
+                } break;
 
                 case IntegerType.Int16: {
                     Int16 Calc = BitConverter.ToInt16(CalculationBytes, 0);
@@ -749,43 +817,35 @@ namespace calc {
                     switch (CalcAction) {
                         case CalculatorAction.Add: {
                             Result = (Int16)(Calc + Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Subtract: {
                             Result = (Int16)(Calc - Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Divide: {
                             Result = (Int16)(Calc / Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Multiply: {
                             Result = (Int16)(Calc * Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Remainder: {
                             Result = (Int16)(Calc % Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Squared: {
                             Result = (Int16)(Calc * Calc);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Cubed: {
                             Result = (Int16)(Calc * Calc * Calc);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Exponent: {
                             Result = (Int16)Math.Pow(Calc, Calc2);
-                        }
-                        break;
+                        } break;
 
                         default: return;
                     }
@@ -810,9 +870,8 @@ namespace calc {
                         bcBytes7.Byte = 0x0;
                         bcBytes8.Byte = 0x0;
                     }
-                    CalculationBytes = new byte[8];
-                }
-                break;
+                    CalculationBytes = CalculationBuffer;
+                } break;
 
                 case IntegerType.UInt16: {
                     UInt16 Calc = BitConverter.ToUInt16(CalculationBytes, 0);
@@ -821,43 +880,35 @@ namespace calc {
                     switch (CalcAction) {
                         case CalculatorAction.Add: {
                             Result = (UInt16)(Calc + Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Subtract: {
                             Result = (UInt16)(Calc - Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Divide: {
                             Result = (UInt16)(Calc / Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Multiply: {
                             Result = (UInt16)(Calc * Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Remainder: {
                             Result = (UInt16)(Calc % Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Squared: {
                             Result = (UInt16)(Calc * Calc);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Cubed: {
                             Result = (UInt16)(Calc * Calc * Calc);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Exponent: {
                             Result = (UInt16)Math.Pow(Calc, Calc2);
-                        }
-                        break;
+                        } break;
 
                         default: return;
                     }
@@ -883,9 +934,8 @@ namespace calc {
                         bcBytes7.Byte = 0x0;
                         bcBytes8.Byte = 0x0;
                     }
-                    CalculationBytes = new byte[8];
-                }
-                break;
+                    CalculationBytes = CalculationBuffer;
+                } break;
 
                 case IntegerType.Int32: {
                     Int32 Calc = BitConverter.ToInt32(CalculationBytes, 0);
@@ -894,43 +944,35 @@ namespace calc {
                     switch (CalcAction) {
                         case CalculatorAction.Add: {
                             Result = (Int32)(Calc + Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Subtract: {
                             Result = (Int32)(Calc - Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Divide: {
                             Result = (Int32)(Calc / Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Multiply: {
                             Result = (Int32)(Calc * Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Remainder: {
                             Result = (Int32)(Calc % Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Squared: {
                             Result = (Int32)(Calc * Calc);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Cubed: {
                             Result = (Int32)(Calc * Calc * Calc);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Exponent: {
                             Result = (Int32)Math.Pow(Calc, Calc2);
-                        }
-                        break;
+                        } break;
 
                         default: return;
                     }
@@ -956,9 +998,8 @@ namespace calc {
                         bcBytes7.Byte = 0x0;
                         bcBytes8.Byte = 0x0;
                     }
-                    CalculationBytes = new byte[8];
-                }
-                break;
+                    CalculationBytes = CalculationBuffer;
+                } break;
 
                 case IntegerType.UInt32: {
                     UInt32 Calc = BitConverter.ToUInt32(CalculationBytes, 0);
@@ -967,43 +1008,35 @@ namespace calc {
                     switch (CalcAction) {
                         case CalculatorAction.Add: {
                             Result = (UInt32)(Calc + Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Subtract: {
                             Result = (UInt32)(Calc - Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Divide: {
                             Result = (UInt32)(Calc / Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Multiply: {
                             Result = (UInt32)(Calc * Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Remainder: {
                             Result = (UInt32)(Calc % Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Squared: {
                             Result = (UInt32)(Calc * Calc);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Cubed: {
                             Result = (UInt32)(Calc * Calc * Calc);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Exponent: {
                             Result = (UInt32)Math.Pow(Calc, Calc2);
-                        }
-                        break;
+                        } break;
 
                         default: return;
                     }
@@ -1029,9 +1062,8 @@ namespace calc {
                         bcBytes7.Byte = 0x0;
                         bcBytes8.Byte = 0x0;
                     }
-                    CalculationBytes = new byte[8];
-                }
-                break;
+                    CalculationBytes = CalculationBuffer;
+                } break;
 
                 case IntegerType.Single: {
                     Single Calc = BitConverter.ToSingle(CalculationBytes, 0);
@@ -1040,43 +1072,35 @@ namespace calc {
                     switch (CalcAction) {
                         case CalculatorAction.Add: {
                             Result = (Single)(Calc + Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Subtract: {
                             Result = (Single)(Calc - Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Divide: {
                             Result = (Single)(Calc / Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Multiply: {
                             Result = (Single)(Calc * Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Remainder: {
                             Result = (Single)(Calc % Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Squared: {
                             Result = (Single)(Calc * Calc);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Cubed: {
                             Result = (Single)(Calc * Calc * Calc);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Exponent: {
                             Result = (Single)Math.Pow(Calc, Calc2);
-                        }
-                        break;
+                        } break;
 
                         default: return;
                     }
@@ -1102,9 +1126,8 @@ namespace calc {
                         bcBytes7.Byte = 0x0;
                         bcBytes8.Byte = 0x0;
                     }
-                    CalculationBytes = new byte[8];
-                }
-                break;
+                    CalculationBytes = CalculationBuffer;
+                } break;
 
                 case IntegerType.Int64: {
                     Int64 Calc = BitConverter.ToInt64(CalculationBytes, 0);
@@ -1113,43 +1136,35 @@ namespace calc {
                     switch (CalcAction) {
                         case CalculatorAction.Add: {
                             Result = (Int64)(Calc + Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Subtract: {
                             Result = (Int64)(Calc - Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Divide: {
                             Result = (Int64)(Calc / Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Multiply: {
                             Result = (Int64)(Calc * Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Remainder: {
                             Result = (Int64)(Calc % Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Squared: {
                             Result = (Int64)(Calc * Calc);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Cubed: {
                             Result = (Int64)(Calc * Calc * Calc);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Exponent: {
                             Result = (Int64)Math.Pow(Calc, Calc2);
-                        }
-                        break;
+                        } break;
 
                         default: return;
                     }
@@ -1175,9 +1190,8 @@ namespace calc {
                         bcBytes7.Byte = CalculationBytes[6];
                         bcBytes8.Byte = CalculationBytes[7];
                     }
-                    CalculationBytes = new byte[8];
-                }
-                break;
+                    CalculationBytes = CalculationBuffer;
+                } break;
 
                 case IntegerType.UInt64: {
                     UInt64 Calc = BitConverter.ToUInt64(CalculationBytes, 0);
@@ -1186,43 +1200,35 @@ namespace calc {
                     switch (CalcAction) {
                         case CalculatorAction.Add: {
                             Result = (UInt64)(Calc + Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Subtract: {
                             Result = (UInt64)(Calc - Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Divide: {
                             Result = (UInt64)(Calc / Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Multiply: {
                             Result = (UInt64)(Calc * Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Remainder: {
                             Result = (UInt64)(Calc % Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Squared: {
                             Result = (UInt64)(Calc * Calc);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Cubed: {
                             Result = (UInt64)(Calc * Calc * Calc);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Exponent: {
                             Result = (UInt64)Math.Pow(Calc, Calc2);
-                        }
-                        break;
+                        } break;
 
                         default: return;
                     }
@@ -1248,9 +1254,8 @@ namespace calc {
                         bcBytes7.Byte = CalculationBytes[6];
                         bcBytes8.Byte = CalculationBytes[7];
                     }
-                    CalculationBytes = new byte[8];
-                }
-                break;
+                    CalculationBytes = CalculationBuffer;
+                } break;
 
                 case IntegerType.Double: {
                     Double Calc = BitConverter.ToDouble(CalculationBytes, 0);
@@ -1259,63 +1264,51 @@ namespace calc {
                     switch (CalcAction) {
                         case CalculatorAction.Add: {
                             Result = (Double)(Calc + Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Subtract: {
                             Result = (Double)(Calc - Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Divide: {
                             Result = (Double)(Calc / Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Multiply: {
                             Result = (Double)(Calc * Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Remainder: {
                             Result = (Double)(Calc % Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Squared: {
                             Result = (Double)(Calc * Calc);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Cubed: {
                             Result = (Double)(Calc * Calc * Calc);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Exponent: {
                             Result = Math.Pow(Calc, Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.SquareRoot: {
                             Result = Math.Sqrt(Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Sine: {
                             Result = Math.Sin(Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Cosine: {
                             Result = Math.Cos(Calc2);
-                        }
-                        break;
+                        } break;
 
                         case CalculatorAction.Tangent: {
                             Result = Math.Tan(Calc2);
-                        }
-                        break;
+                        } break;
 
                         default: return;
                     }
@@ -1341,18 +1334,15 @@ namespace calc {
                         bcBytes7.Byte = CalculationBytes[6];
                         bcBytes8.Byte = CalculationBytes[7];
                     }
-                    CalculationBytes = new byte[8];
-                }
-                break;
+                    CalculationBytes = CalculationBuffer;
+                } break;
 
-                default: {
-                }
-                return;
+                default: return;
             }
 
-            CalcAction = CalculatorAction.None;
+            //CalcAction = CalculatorAction.None;
+            CalculationBuffer = null;
         }
-
         private bool GetClipboardData() {
             if (!Clipboard.ContainsText()) return false;
             byte[] buffer;
@@ -1578,6 +1568,23 @@ namespace calc {
                 default: return false;
             }
         }
+        private void ResetInput() {
+            DataBytes = new byte[8];
+            bcBytes1.Byte = 0x0;
+            bcBytes2.Byte = 0x0;
+            bcBytes3.Byte = 0x0;
+            bcBytes4.Byte = 0x0;
+            bcBytes5.Byte = 0x0;
+            bcBytes6.Byte = 0x0;
+            bcBytes7.Byte = 0x0;
+            bcBytes8.Byte = 0x0;
+            KeyDataValue = "";
+            DataValue = "";
+            DataHex = "";
+            GetValue();
+            GetHex();
+            lbUpper.Focus();
+        }
 
         private void mBigEndian_Click(object sender, EventArgs e) {
             mBigEndian.Checked ^= true;
@@ -1598,14 +1605,14 @@ namespace calc {
             lbBytesLittle7.Visible = !mBigEndian.Checked;
             lbBytesLittle8.Visible = !mBigEndian.Checked;
             if (mBigEndian.Checked) {
-                bcBytes8.Byte = DataBytes[0];
-                bcBytes7.Byte = DataBytes[1];
-                bcBytes6.Byte = DataBytes[2];
-                bcBytes5.Byte = DataBytes[3];
-                bcBytes4.Byte = DataBytes[4];
-                bcBytes3.Byte = DataBytes[5];
-                bcBytes2.Byte = DataBytes[6];
-                bcBytes1.Byte = DataBytes[7];
+                bcBytes8.SetByte(DataBytes[0]);
+                bcBytes7.SetByte(DataBytes[1]);
+                bcBytes6.SetByte(DataBytes[2]);
+                bcBytes5.SetByte(DataBytes[3]);
+                bcBytes4.SetByte(DataBytes[4]);
+                bcBytes3.SetByte(DataBytes[5]);
+                bcBytes2.SetByte(DataBytes[6]);
+                bcBytes1.SetByte(DataBytes[7]);
 
                 bcBytes8.Enabled = true;
                 bcBytes7.Enabled = rbInt16.Checked || rbInt32.Checked || rbSingle.Checked || rbInt64.Checked || rbDouble.Checked;
@@ -1617,14 +1624,14 @@ namespace calc {
                 bcBytes1.Enabled = rbInt64.Checked || rbDouble.Checked;
             }
             else {
-                bcBytes8.Byte = DataBytes[7];
-                bcBytes7.Byte = DataBytes[6];
-                bcBytes6.Byte = DataBytes[5];
-                bcBytes5.Byte = DataBytes[4];
-                bcBytes4.Byte = DataBytes[3];
-                bcBytes3.Byte = DataBytes[2];
-                bcBytes2.Byte = DataBytes[1];
-                bcBytes1.Byte = DataBytes[0];
+                bcBytes1.SetByte(DataBytes[0]);
+                bcBytes2.SetByte(DataBytes[1]);
+                bcBytes3.SetByte(DataBytes[2]);
+                bcBytes4.SetByte(DataBytes[3]);
+                bcBytes5.SetByte(DataBytes[4]);
+                bcBytes6.SetByte(DataBytes[5]);
+                bcBytes7.SetByte(DataBytes[6]);
+                bcBytes8.SetByte(DataBytes[7]);
 
                 bcBytes1.Enabled = true;
                 bcBytes2.Enabled = rbInt16.Checked || rbInt32.Checked || rbSingle.Checked || rbInt64.Checked || rbDouble.Checked;
@@ -1643,6 +1650,7 @@ namespace calc {
             bcBytes6.BigEndian = mBigEndian.Checked;
             bcBytes7.BigEndian = mBigEndian.Checked;
             bcBytes8.BigEndian = mBigEndian.Checked;
+            BitSet(null, null);
         }
         private void mTopMost_Click(object sender, EventArgs e) {
             mTopMost.Checked ^= true;
@@ -1668,6 +1676,19 @@ namespace calc {
                 rbInt64.Text = "Int64";
             }
         }
+        private void mColors_Click(object sender, EventArgs e) {
+            using frmChangeColors newColor = new();
+            newColor.SetBackgroundColor = pnOutput.BackColor;
+            newColor.SetBitBackgroundColor = pnBits.BackColor;
+            newColor.SetForeColor = lbUpper.ForeColor;
+            newColor.SetFadedForeColor = lbLower.ForeColor;
+            if (newColor.ShowDialog() == DialogResult.OK) {
+                pnOutput.BackColor = newColor.SetBackgroundColor;
+                pnBits.BackColor = newColor.SetBitBackgroundColor;
+                lbUpper.ForeColor = lbAction.ForeColor = bcBytes1.ForeColor = bcBytes2.ForeColor = bcBytes3.ForeColor = bcBytes4.ForeColor = bcBytes5.ForeColor = bcBytes6.ForeColor = bcBytes7.ForeColor = bcBytes8.ForeColor = lbBytesBig1.ForeColor = lbBytesBig2.ForeColor = lbBytesBig3.ForeColor = lbBytesBig4.ForeColor = lbBytesBig5.ForeColor = lbBytesBig6.ForeColor = lbBytesBig7.ForeColor = lbBytesBig8.ForeColor = lbBytesLittle1.ForeColor = lbBytesLittle2.ForeColor = lbBytesLittle3.ForeColor = lbBytesLittle4.ForeColor = lbBytesLittle5.ForeColor = lbBytesLittle6.ForeColor = lbBytesLittle7.ForeColor = lbBytesLittle8.ForeColor = newColor.SetForeColor;
+                lbLower.ForeColor = newColor.SetFadedForeColor;
+            }
+        }
         private void mSystemCalculator_Click(object sender, EventArgs e) {
             if (File.Exists("calc.exe")) {
                 System.Diagnostics.Process.Start("calc.exe");
@@ -1677,7 +1698,8 @@ namespace calc {
             }
         }
         private void mAbout_Click(object sender, EventArgs e) {
-            MessageBox.Show("calc created by murrty\r\nthis isn't a total calculator replacement\r\njust a simple calculator that include bits and hex values", "calc");
+            using frmAbout about = new();
+            about.ShowDialog();
         }
 
         private void mCopyUpper_Click(object sender, EventArgs e) {
@@ -1816,6 +1838,7 @@ namespace calc {
                     chkSigned.Checked = false;
                     return;
                 }
+                btnPositive.Enabled = btnNegative.Enabled = chkSigned.Checked;
                 GetValue();
             }
             lbUpper.Focus();
@@ -1840,45 +1863,19 @@ namespace calc {
                     KeyDataValue = "0";
                 }
                 CheckKeyData();
-                lbUpper.Focus();
             }
+            lbUpper.Focus();
         }
         private void btnClearAll_Click(object sender, EventArgs e) {
-            KeyDataValue = "";
-            DataValue = "";
-            DataHex = "";
-            bcBytes1.Byte = 0x0;
-            bcBytes2.Byte = 0x0;
-            bcBytes3.Byte = 0x0;
-            bcBytes4.Byte = 0x0;
-            bcBytes5.Byte = 0x0;
-            bcBytes6.Byte = 0x0;
-            bcBytes7.Byte = 0x0;
-            bcBytes8.Byte = 0x0;
             if (CalcAction != CalculatorAction.None) {
                 CalcAction = CalculatorAction.None;
                 CalculationBytes = new byte[8];
                 lbAction.Text = "...";
             }
-            GetValue();
-            GetHex();
-            lbUpper.Focus();
+            ResetInput();
         }
         private void btnClearEntry_Click(object sender, EventArgs e) {
-            DataHex = "";
-            DataValue = "";
-            KeyDataValue = "";
-            bcBytes1.Byte = 0x0;
-            bcBytes2.Byte = 0x0;
-            bcBytes3.Byte = 0x0;
-            bcBytes4.Byte = 0x0;
-            bcBytes5.Byte = 0x0;
-            bcBytes6.Byte = 0x0;
-            bcBytes7.Byte = 0x0;
-            bcBytes8.Byte = 0x0;
-            GetValue();
-            GetHex();
-            lbUpper.Focus();
+            ResetInput();
         }
         private void btnClearCalculation_Click(object sender, EventArgs e) {
             CalcAction = CalculatorAction.None;
@@ -1894,21 +1891,7 @@ namespace calc {
             CalculationBytes = (byte[])DataBytes.Clone();
             CalcAction = CalculatorAction.Add;
             lbAction.Text = "Adding";
-            DataBytes = new byte[8];
-            bcBytes1.Byte = 0x0;
-            bcBytes2.Byte = 0x0;
-            bcBytes3.Byte = 0x0;
-            bcBytes4.Byte = 0x0;
-            bcBytes5.Byte = 0x0;
-            bcBytes6.Byte = 0x0;
-            bcBytes7.Byte = 0x0;
-            bcBytes8.Byte = 0x0;
-            KeyDataValue = "";
-            DataValue = "";
-            DataHex = "";
-            GetValue();
-            GetHex();
-            lbUpper.Focus();
+            ResetInput();
         }
         private void btnSubtract_Click(object sender, EventArgs e) {
             if (CalcAction != CalculatorAction.None) {
@@ -1917,21 +1900,7 @@ namespace calc {
             CalculationBytes = (byte[])DataBytes.Clone();
             CalcAction = CalculatorAction.Subtract;
             lbAction.Text = "Subtracting";
-            DataBytes = new byte[8];
-            bcBytes1.Byte = 0x0;
-            bcBytes2.Byte = 0x0;
-            bcBytes3.Byte = 0x0;
-            bcBytes4.Byte = 0x0;
-            bcBytes5.Byte = 0x0;
-            bcBytes6.Byte = 0x0;
-            bcBytes7.Byte = 0x0;
-            bcBytes8.Byte = 0x0;
-            KeyDataValue = "0";
-            DataValue = "0";
-            DataHex = "0x0";
-            GetValue();
-            GetHex();
-            lbUpper.Focus();
+            ResetInput();
         }
         private void btnDivide_Click(object sender, EventArgs e) {
             if (CalcAction != CalculatorAction.None) {
@@ -1940,21 +1909,7 @@ namespace calc {
             CalculationBytes = (byte[])DataBytes.Clone();
             CalcAction = CalculatorAction.Divide;
             lbAction.Text = "Dividing";
-            DataBytes = new byte[8];
-            bcBytes1.Byte = 0x0;
-            bcBytes2.Byte = 0x0;
-            bcBytes3.Byte = 0x0;
-            bcBytes4.Byte = 0x0;
-            bcBytes5.Byte = 0x0;
-            bcBytes6.Byte = 0x0;
-            bcBytes7.Byte = 0x0;
-            bcBytes8.Byte = 0x0;
-            KeyDataValue = "0";
-            DataValue = "0";
-            DataHex = "0x0";
-            GetValue();
-            GetHex();
-            lbUpper.Focus();
+            ResetInput();
         }
         private void btnMulitply_Click(object sender, EventArgs e) {
             if (CalcAction != CalculatorAction.None) {
@@ -1963,21 +1918,7 @@ namespace calc {
             CalculationBytes = (byte[])DataBytes.Clone();
             CalcAction = CalculatorAction.Multiply;
             lbAction.Text = "Multiplying";
-            DataBytes = new byte[8];
-            bcBytes1.Byte = 0x0;
-            bcBytes2.Byte = 0x0;
-            bcBytes3.Byte = 0x0;
-            bcBytes4.Byte = 0x0;
-            bcBytes5.Byte = 0x0;
-            bcBytes6.Byte = 0x0;
-            bcBytes7.Byte = 0x0;
-            bcBytes8.Byte = 0x0;
-            KeyDataValue = "0";
-            DataValue = "0";
-            DataHex = "0x0";
-            GetValue();
-            GetHex();
-            lbUpper.Focus();
+            ResetInput();
         }
         private void btnRemainder_Click(object sender, EventArgs e) {
             if (CalcAction != CalculatorAction.None) {
@@ -1986,32 +1927,14 @@ namespace calc {
             CalculationBytes = (byte[])DataBytes.Clone();
             CalcAction = CalculatorAction.Remainder;
             lbAction.Text = "Remainder";
-            DataBytes = new byte[8];
-            bcBytes1.Byte = 0x0;
-            bcBytes2.Byte = 0x0;
-            bcBytes3.Byte = 0x0;
-            bcBytes4.Byte = 0x0;
-            bcBytes5.Byte = 0x0;
-            bcBytes6.Byte = 0x0;
-            bcBytes7.Byte = 0x0;
-            bcBytes8.Byte = 0x0;
-            KeyDataValue = "0";
-            DataValue = "0";
-            DataHex = "0x0";
-            GetValue();
-            GetHex();
-            lbUpper.Focus();
+            ResetInput();
         }
         private void btnCalculate_Click(object sender, EventArgs e) {
             if (CalcAction != CalculatorAction.None) {
                 PerformCalculation();
                 GetValue();
                 GetHex();
-                lbAction.Text = "...";
-                //KeyDataValue = "";
-                //DataValue = "";
-                //DataHex = "";
-                this.Focus();
+                //lbAction.Text = "...";
             }
             else {
                 System.Media.SystemSounds.Beep.Play();
@@ -2106,74 +2029,32 @@ namespace calc {
             }
             CalculationBytes = (byte[])DataBytes.Clone();
             CalcAction = CalculatorAction.Exponent;
-            DataBytes = new byte[8];
-            bcBytes1.Byte = 0x0;
-            bcBytes2.Byte = 0x0;
-            bcBytes3.Byte = 0x0;
-            bcBytes4.Byte = 0x0;
-            bcBytes5.Byte = 0x0;
-            bcBytes6.Byte = 0x0;
-            bcBytes7.Byte = 0x0;
-            bcBytes8.Byte = 0x0;
             lbAction.Text = "Exponent";
-            KeyDataValue = "0";
-            DataValue = "0";
-            DataHex = "0x0";
-            GetValue();
-            GetHex();
-            lbUpper.Focus();
+            ResetInput();
         }
         private void btnFlipBits_Click(object sender, EventArgs e) {
-            FlippingBits = true;
-            if (mBigEndian.Checked) {
-                bcBytes8.Byte = bcBytes8.Byte.InvertByte();
-                switch (DataType) {
-                    case IntegerType.Int16 or IntegerType.UInt16: {
-                        bcBytes7.Byte = bcBytes7.Byte.InvertByte();
-                    } break;
+            bcBytes8.SetByte(bcBytes8.Byte.InvertByte());
+            switch (DataType) {
+                case IntegerType.Int16 or IntegerType.UInt16: {
+                    bcBytes7.SetByte(bcBytes7.Byte.InvertByte());
+                } break;
 
-                    case IntegerType.Int32 or IntegerType.UInt32 or IntegerType.Single: {
-                        bcBytes7.Byte = bcBytes7.Byte.InvertByte();
-                        bcBytes6.Byte = bcBytes6.Byte.InvertByte();
-                        bcBytes5.Byte = bcBytes5.Byte.InvertByte();
-                    } break;
+                case IntegerType.Int32 or IntegerType.UInt32 or IntegerType.Single: {
+                    bcBytes7.SetByte(bcBytes7.Byte.InvertByte());
+                    bcBytes6.SetByte(bcBytes6.Byte.InvertByte());
+                    bcBytes5.SetByte(bcBytes5.Byte.InvertByte());
+                } break;
 
-                    case IntegerType.Int64 or IntegerType.UInt64 or IntegerType.Double: {
-                        bcBytes7.Byte = bcBytes7.Byte.InvertByte();
-                        bcBytes6.Byte = bcBytes6.Byte.InvertByte();
-                        bcBytes5.Byte = bcBytes5.Byte.InvertByte();
-                        bcBytes4.Byte = bcBytes4.Byte.InvertByte();
-                        bcBytes3.Byte = bcBytes3.Byte.InvertByte();
-                        bcBytes2.Byte = bcBytes2.Byte.InvertByte();
-                        bcBytes1.Byte = bcBytes1.Byte.InvertByte();
-                    } break;
-                }
+                case IntegerType.Int64 or IntegerType.UInt64 or IntegerType.Double: {
+                    bcBytes7.SetByte(bcBytes7.Byte.InvertByte());
+                    bcBytes6.SetByte(bcBytes6.Byte.InvertByte());
+                    bcBytes5.SetByte(bcBytes5.Byte.InvertByte());
+                    bcBytes4.SetByte(bcBytes4.Byte.InvertByte());
+                    bcBytes3.SetByte(bcBytes3.Byte.InvertByte());
+                    bcBytes2.SetByte(bcBytes2.Byte.InvertByte());
+                    bcBytes1.SetByte(bcBytes1.Byte.InvertByte());
+                } break;
             }
-            else {
-                bcBytes1.Byte = bcBytes1.Byte.InvertByte();
-                switch (DataType) {
-                    case IntegerType.Int16 or IntegerType.UInt16: {
-                        bcBytes2.Byte = bcBytes2.Byte.InvertByte();
-                    } break;
-
-                    case IntegerType.Int32 or IntegerType.UInt32 or IntegerType.Single: {
-                        bcBytes2.Byte = bcBytes2.Byte.InvertByte();
-                        bcBytes3.Byte = bcBytes2.Byte.InvertByte();
-                        bcBytes4.Byte = bcBytes3.Byte.InvertByte();
-                    } break;
-
-                    case IntegerType.Int64 or IntegerType.UInt64 or IntegerType.Double: {
-                        bcBytes2.Byte = bcBytes2.Byte.InvertByte();
-                        bcBytes3.Byte = bcBytes3.Byte.InvertByte();
-                        bcBytes4.Byte = bcBytes4.Byte.InvertByte();
-                        bcBytes5.Byte = bcBytes5.Byte.InvertByte();
-                        bcBytes6.Byte = bcBytes6.Byte.InvertByte();
-                        bcBytes7.Byte = bcBytes7.Byte.InvertByte();
-                        bcBytes8.Byte = bcBytes8.Byte.InvertByte();
-                    } break;
-                }
-            }
-            FlippingBits = false;
             BitSet(null, null);
             lbUpper.Focus();
         }
@@ -2305,6 +2186,34 @@ namespace calc {
                 }
             }
             lbUpper.Focus();
+        }
+
+        private void mAppendHexIdentifier_Click(object sender, EventArgs e) {
+            mAppendHexIdentifier.Checked ^= true;
+            if (chkHex.Checked) {
+                if (mAppendHexIdentifier.Checked) {
+                    if (!lbUpper.Text.StartsWith("0x")) {
+                        lbUpper.Text = "0x" + lbUpper.Text;
+                    }
+                }
+                else {
+                    if (lbUpper.Text.StartsWith("0x")) {
+                        lbUpper.Text = lbUpper.Text.Substring(2);
+                    }
+                }
+            }
+            else {
+                if (mAppendHexIdentifier.Checked) {
+                    if (!lbLower.Text.StartsWith("0x")) {
+                        lbLower.Text = "0x" + lbLower.Text;
+                    }
+                }
+                else {
+                    if (lbLower.Text.StartsWith("0x")) {
+                        lbLower.Text = lbLower.Text.Substring(2);
+                    }
+                }
+            }
         }
 
     }

@@ -1,47 +1,39 @@
-﻿using System.Drawing;
+﻿using System.ComponentModel;
+using System.Drawing;
 using System.Windows.Forms;
 
-namespace calc {
+using murrty.extensions;
 
-    internal sealed class ByteContainer : Panel {
+namespace murrty.controls {
+    /// <summary>
+    /// Represents a control that holds a
+    /// </summary>
+    internal sealed class ByteContainer : UserControl {
 
         private bool _bigEndian = true;
         private bool _enabled = true;
         private byte _byte = 0x0;
 
         /// <summary>
-        /// The byte-order of the container.
+        /// Gets or sets the bit order of the container.
         /// </summary>
+        [DefaultValue(true)]
         public bool BigEndian {
             get => _bigEndian;
             set {
                 if (_bigEndian != value) {
                     _bigEndian = value;
-                    if (value) {
-                        Byte0.Text = _byte.GetBit(7).ToString();
-                        Byte1.Text = _byte.GetBit(6).ToString();
-                        Byte2.Text = _byte.GetBit(5).ToString();
-                        Byte3.Text = _byte.GetBit(4).ToString();
-                        Byte4.Text = _byte.GetBit(3).ToString();
-                        Byte5.Text = _byte.GetBit(2).ToString();
-                        Byte6.Text = _byte.GetBit(1).ToString();
-                        Byte7.Text = _byte.GetBit(0).ToString();
-                    }
-                    else {
-                        Byte0.Text = _byte.GetBit(0).ToString();
-                        Byte1.Text = _byte.GetBit(1).ToString();
-                        Byte2.Text = _byte.GetBit(2).ToString();
-                        Byte3.Text = _byte.GetBit(3).ToString();
-                        Byte4.Text = _byte.GetBit(4).ToString();
-                        Byte5.Text = _byte.GetBit(5).ToString();
-                        Byte6.Text = _byte.GetBit(6).ToString();
-                        Byte7.Text = _byte.GetBit(7).ToString();
+                    if (_byte != 0x0) {
+                        UpdateBits();
                     }
                 }
             }
         }
 
-        [System.ComponentModel.DefaultValue(true)]
+        /// <summary>
+        /// Gets or sets whether the container allows bit modification.
+        /// </summary>
+        [DefaultValue(true)]
         public new bool Enabled {
             get => _enabled;
             set {
@@ -65,6 +57,10 @@ namespace calc {
             }
         }
 
+        /// <summary>
+        /// Gets or sets the font of the text displayed in the container.
+        /// </summary>
+        [DefaultValue(typeof(Font), "Consolas, 12pt")]
         public new Font Font {
             get => base.Font;
             set {
@@ -83,6 +79,9 @@ namespace calc {
             }
         }
 
+        /// <summary>
+        /// Gets or sets the color of the text displayed in the container.
+        /// </summary>
         public new Color ForeColor {
             get => base.ForeColor;
             set {
@@ -98,36 +97,36 @@ namespace calc {
             }
         }
 
+        /// <summary>
+        /// Gets or sets the byte associated with the byte container.
+        /// </summary>
+        [DefaultValue(typeof(byte), "0")]
         public byte Byte {
             get => _byte;
             set {
                 _byte = value;
-                if (_bigEndian) {
-                    Byte0.Text = _byte.GetBit(7).ToString();
-                    Byte1.Text = _byte.GetBit(6).ToString();
-                    Byte2.Text = _byte.GetBit(5).ToString();
-                    Byte3.Text = _byte.GetBit(4).ToString();
-                    Byte4.Text = _byte.GetBit(3).ToString();
-                    Byte5.Text = _byte.GetBit(2).ToString();
-                    Byte6.Text = _byte.GetBit(1).ToString();
-                    Byte7.Text = _byte.GetBit(0).ToString();
-                }
-                else {
-                    Byte0.Text = _byte.GetBit(0).ToString();
-                    Byte1.Text = _byte.GetBit(1).ToString();
-                    Byte2.Text = _byte.GetBit(2).ToString();
-                    Byte3.Text = _byte.GetBit(3).ToString();
-                    Byte4.Text = _byte.GetBit(4).ToString();
-                    Byte5.Text = _byte.GetBit(5).ToString();
-                    Byte6.Text = _byte.GetBit(6).ToString();
-                    Byte7.Text = _byte.GetBit(7).ToString();
-                }
+                UpdateBits();
                 BitChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
-        public string ByteString => Byte.ToString("X2");
+        /// <summary>
+        /// Sets the byte associated with the byte container, but doesn't invoke the BitChanged event.
+        /// </summary>
+        /// <param name="newByte"></param>
+        public void SetByte(byte newByte) {
+            _byte = newByte;
+            UpdateBits();
+        }
 
+        /// <summary>
+        /// Gets the byte value in Hexadecimal.
+        /// </summary>
+        public string ByteHexString => Byte.ToString("X2");
+
+        /// <summary>
+        /// Event that occurs when a bit in the container is changed or the byte value is changed.
+        /// </summary>
         public event EventHandler<EventArgs> BitChanged;
 
         private readonly HandLabel Byte0 = new() { Text = "0", BackColor = Color.Transparent, TextAlign = ContentAlignment.MiddleCenter, AutoSize = false, Cursor = Cursors.Hand };
@@ -140,6 +139,9 @@ namespace calc {
         private readonly HandLabel Byte6 = new() { Text = "0", BackColor = Color.Transparent, TextAlign = ContentAlignment.MiddleCenter, AutoSize = false, Cursor = Cursors.Hand };
         private readonly HandLabel Byte7 = new() { Text = "0", BackColor = Color.Transparent, TextAlign = ContentAlignment.MiddleCenter, AutoSize = false, Cursor = Cursors.Hand };
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ByteContainer"/>.
+        /// </summary>
         public ByteContainer() {
             Controls.Add(Byte0);
             Byte0.MouseDown += (s, e) => {
@@ -242,6 +244,9 @@ namespace calc {
             ResizeControl();
         }
 
+        /// <summary>
+        /// Resizes the control to fit the default font.
+        /// </summary>
         private void ResizeControl() {
             Size fontSize = TextRenderer.MeasureText("0", this.Font);
             this.Size = new(
@@ -292,6 +297,44 @@ namespace calc {
                 Byte6.Location.X + Byte6.Size.Width,
                 4
             );
+        }
+
+        /// <summary>
+        /// Updates the bits displayed in the container.
+        /// </summary>
+        public void UpdateBits() {
+            if (_bigEndian) {
+                Byte0.Text = _byte.GetBit(7).ToString();
+                Byte1.Text = _byte.GetBit(6).ToString();
+                Byte2.Text = _byte.GetBit(5).ToString();
+                Byte3.Text = _byte.GetBit(4).ToString();
+                Byte4.Text = _byte.GetBit(3).ToString();
+                Byte5.Text = _byte.GetBit(2).ToString();
+                Byte6.Text = _byte.GetBit(1).ToString();
+                Byte7.Text = _byte.GetBit(0).ToString();
+            }
+            else {
+                Byte0.Text = _byte.GetBit(0).ToString();
+                Byte1.Text = _byte.GetBit(1).ToString();
+                Byte2.Text = _byte.GetBit(2).ToString();
+                Byte3.Text = _byte.GetBit(3).ToString();
+                Byte4.Text = _byte.GetBit(4).ToString();
+                Byte5.Text = _byte.GetBit(5).ToString();
+                Byte6.Text = _byte.GetBit(6).ToString();
+                Byte7.Text = _byte.GetBit(7).ToString();
+            }
+        }
+
+        protected override void OnPaint(PaintEventArgs e) {
+            base.OnPaint(e);
+            if (DesignMode) {
+                ControlPaint.DrawBorder(e.Graphics, ClientRectangle,
+                    Color.Red, 1, ButtonBorderStyle.Dashed,
+                    Color.Red, 1, ButtonBorderStyle.Dashed,
+                    Color.Red, 1, ButtonBorderStyle.Dashed,
+                    Color.Red, 1, ButtonBorderStyle.Dashed
+                );
+            }
         }
 
     }

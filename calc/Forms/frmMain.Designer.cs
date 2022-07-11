@@ -19,6 +19,8 @@
             this.mTopMost = new System.Windows.Forms.MenuItem();
             this.mThousandths = new System.Windows.Forms.MenuItem();
             this.mSimpleNames = new System.Windows.Forms.MenuItem();
+            this.mSettingsSeparator = new System.Windows.Forms.MenuItem();
+            this.mColors = new System.Windows.Forms.MenuItem();
             this.mSystemCalculator = new System.Windows.Forms.MenuItem();
             this.mAbout = new System.Windows.Forms.MenuItem();
             this.gbType = new System.Windows.Forms.GroupBox();
@@ -65,7 +67,7 @@
             this.btnE = new System.Windows.Forms.Button();
             this.btnF = new System.Windows.Forms.Button();
             this.gbOutput = new System.Windows.Forms.GroupBox();
-            this.pnOuput = new System.Windows.Forms.Panel();
+            this.pnOutput = new System.Windows.Forms.Panel();
             this.lbAction = new System.Windows.Forms.Label();
             this.gbBits = new System.Windows.Forms.GroupBox();
             this.pnBits = new System.Windows.Forms.Panel();
@@ -109,17 +111,18 @@
             this.btnFlipBits = new System.Windows.Forms.Button();
             this.btnUnused2 = new System.Windows.Forms.Button();
             this.btnUnused3 = new System.Windows.Forms.Button();
-            this.bcBytes1 = new calc.ByteContainer();
-            this.bcBytes4 = new calc.ByteContainer();
-            this.bcBytes5 = new calc.ByteContainer();
-            this.bcBytes8 = new calc.ByteContainer();
-            this.bcBytes2 = new calc.ByteContainer();
-            this.bcBytes6 = new calc.ByteContainer();
-            this.bcBytes7 = new calc.ByteContainer();
-            this.bcBytes3 = new calc.ByteContainer();
+            this.bcBytes1 = new murrty.controls.ByteContainer();
+            this.bcBytes4 = new murrty.controls.ByteContainer();
+            this.bcBytes5 = new murrty.controls.ByteContainer();
+            this.bcBytes8 = new murrty.controls.ByteContainer();
+            this.bcBytes2 = new murrty.controls.ByteContainer();
+            this.bcBytes6 = new murrty.controls.ByteContainer();
+            this.bcBytes7 = new murrty.controls.ByteContainer();
+            this.bcBytes3 = new murrty.controls.ByteContainer();
+            this.mAppendHexIdentifier = new System.Windows.Forms.MenuItem();
             this.gbType.SuspendLayout();
             this.gbOutput.SuspendLayout();
-            this.pnOuput.SuspendLayout();
+            this.pnOutput.SuspendLayout();
             this.gbBits.SuspendLayout();
             this.pnBits.SuspendLayout();
             this.SuspendLayout();
@@ -138,7 +141,10 @@
             this.mBigEndian,
             this.mTopMost,
             this.mThousandths,
-            this.mSimpleNames});
+            this.mSimpleNames,
+            this.mAppendHexIdentifier,
+            this.mSettingsSeparator,
+            this.mColors});
             this.mSettings.Text = "Settings";
             // 
             // mBigEndian
@@ -166,6 +172,17 @@
             this.mSimpleNames.Index = 3;
             this.mSimpleNames.Text = "Simple names";
             this.mSimpleNames.Click += new System.EventHandler(this.mSimpleNames_Click);
+            // 
+            // mSettingsSeparator
+            // 
+            this.mSettingsSeparator.Index = 5;
+            this.mSettingsSeparator.Text = "-";
+            // 
+            // mColors
+            // 
+            this.mColors.Index = 6;
+            this.mColors.Text = "Colors...";
+            this.mColors.Click += new System.EventHandler(this.mColors_Click);
             // 
             // mSystemCalculator
             // 
@@ -359,10 +376,10 @@
             // 
             // lbLower
             // 
-            this.lbLower.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.lbLower.BackColor = System.Drawing.Color.Transparent;
             this.lbLower.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbLower.ForeColor = System.Drawing.SystemColors.ControlDark;
-            this.lbLower.Location = new System.Drawing.Point(176, 26);
+            this.lbLower.Location = new System.Drawing.Point(176, 23);
             this.lbLower.Name = "lbLower";
             this.lbLower.Size = new System.Drawing.Size(204, 17);
             this.lbLower.TabIndex = 33;
@@ -371,9 +388,9 @@
             // 
             // lbUpper
             // 
-            this.lbUpper.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.lbUpper.BackColor = System.Drawing.Color.Transparent;
             this.lbUpper.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbUpper.Location = new System.Drawing.Point(7, 4);
+            this.lbUpper.Location = new System.Drawing.Point(7, 5);
             this.lbUpper.Name = "lbUpper";
             this.lbUpper.Size = new System.Drawing.Size(373, 19);
             this.lbUpper.TabIndex = 34;
@@ -667,23 +684,23 @@
             // gbOutput
             // 
             this.gbOutput.BackColor = System.Drawing.SystemColors.Control;
-            this.gbOutput.Controls.Add(this.pnOuput);
+            this.gbOutput.Controls.Add(this.pnOutput);
             this.gbOutput.Location = new System.Drawing.Point(4, -5);
             this.gbOutput.Name = "gbOutput";
             this.gbOutput.Size = new System.Drawing.Size(386, 57);
             this.gbOutput.TabIndex = 60;
             this.gbOutput.TabStop = false;
             // 
-            // pnOuput
+            // pnOutput
             // 
-            this.pnOuput.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.pnOuput.Controls.Add(this.lbUpper);
-            this.pnOuput.Controls.Add(this.lbAction);
-            this.pnOuput.Controls.Add(this.lbLower);
-            this.pnOuput.Location = new System.Drawing.Point(3, 9);
-            this.pnOuput.Name = "pnOuput";
-            this.pnOuput.Size = new System.Drawing.Size(381, 46);
-            this.pnOuput.TabIndex = 0;
+            this.pnOutput.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.pnOutput.Controls.Add(this.lbUpper);
+            this.pnOutput.Controls.Add(this.lbAction);
+            this.pnOutput.Controls.Add(this.lbLower);
+            this.pnOutput.Location = new System.Drawing.Point(3, 10);
+            this.pnOutput.Name = "pnOutput";
+            this.pnOutput.Size = new System.Drawing.Size(380, 44);
+            this.pnOutput.TabIndex = 0;
             // 
             // lbAction
             // 
@@ -1132,10 +1149,7 @@
             // 
             // bcBytes1
             // 
-            this.bcBytes1.BigEndian = true;
-            this.bcBytes1.Byte = ((byte)(0));
             this.bcBytes1.Enabled = false;
-            this.bcBytes1.Font = new System.Drawing.Font("Consolas", 12F);
             this.bcBytes1.Location = new System.Drawing.Point(2, 8);
             this.bcBytes1.Name = "bcBytes1";
             this.bcBytes1.Size = new System.Drawing.Size(94, 27);
@@ -1144,10 +1158,7 @@
             // 
             // bcBytes4
             // 
-            this.bcBytes4.BigEndian = true;
-            this.bcBytes4.Byte = ((byte)(0));
             this.bcBytes4.Enabled = false;
-            this.bcBytes4.Font = new System.Drawing.Font("Consolas", 12F);
             this.bcBytes4.Location = new System.Drawing.Point(290, 8);
             this.bcBytes4.Name = "bcBytes4";
             this.bcBytes4.Size = new System.Drawing.Size(94, 27);
@@ -1156,9 +1167,6 @@
             // 
             // bcBytes5
             // 
-            this.bcBytes5.BigEndian = true;
-            this.bcBytes5.Byte = ((byte)(0));
-            this.bcBytes5.Font = new System.Drawing.Font("Consolas", 12F);
             this.bcBytes5.Location = new System.Drawing.Point(2, 39);
             this.bcBytes5.Name = "bcBytes5";
             this.bcBytes5.Size = new System.Drawing.Size(94, 27);
@@ -1167,9 +1175,6 @@
             // 
             // bcBytes8
             // 
-            this.bcBytes8.BigEndian = true;
-            this.bcBytes8.Byte = ((byte)(0));
-            this.bcBytes8.Font = new System.Drawing.Font("Consolas", 12F);
             this.bcBytes8.Location = new System.Drawing.Point(290, 39);
             this.bcBytes8.Name = "bcBytes8";
             this.bcBytes8.Size = new System.Drawing.Size(94, 27);
@@ -1178,10 +1183,7 @@
             // 
             // bcBytes2
             // 
-            this.bcBytes2.BigEndian = true;
-            this.bcBytes2.Byte = ((byte)(0));
             this.bcBytes2.Enabled = false;
-            this.bcBytes2.Font = new System.Drawing.Font("Consolas", 12F);
             this.bcBytes2.Location = new System.Drawing.Point(98, 8);
             this.bcBytes2.Name = "bcBytes2";
             this.bcBytes2.Size = new System.Drawing.Size(94, 27);
@@ -1190,9 +1192,6 @@
             // 
             // bcBytes6
             // 
-            this.bcBytes6.BigEndian = true;
-            this.bcBytes6.Byte = ((byte)(0));
-            this.bcBytes6.Font = new System.Drawing.Font("Consolas", 12F);
             this.bcBytes6.Location = new System.Drawing.Point(98, 39);
             this.bcBytes6.Name = "bcBytes6";
             this.bcBytes6.Size = new System.Drawing.Size(94, 27);
@@ -1201,9 +1200,6 @@
             // 
             // bcBytes7
             // 
-            this.bcBytes7.BigEndian = true;
-            this.bcBytes7.Byte = ((byte)(0));
-            this.bcBytes7.Font = new System.Drawing.Font("Consolas", 12F);
             this.bcBytes7.Location = new System.Drawing.Point(194, 39);
             this.bcBytes7.Name = "bcBytes7";
             this.bcBytes7.Size = new System.Drawing.Size(94, 27);
@@ -1212,15 +1208,19 @@
             // 
             // bcBytes3
             // 
-            this.bcBytes3.BigEndian = true;
-            this.bcBytes3.Byte = ((byte)(0));
             this.bcBytes3.Enabled = false;
-            this.bcBytes3.Font = new System.Drawing.Font("Consolas", 12F);
             this.bcBytes3.Location = new System.Drawing.Point(194, 8);
             this.bcBytes3.Name = "bcBytes3";
             this.bcBytes3.Size = new System.Drawing.Size(94, 27);
             this.bcBytes3.TabIndex = 11;
             this.bcBytes3.BitChanged += new System.EventHandler<System.EventArgs>(this.BitSet);
+            // 
+            // mAppendHexIdentifier
+            // 
+            this.mAppendHexIdentifier.Checked = true;
+            this.mAppendHexIdentifier.Index = 4;
+            this.mAppendHexIdentifier.Text = "Append hex id";
+            this.mAppendHexIdentifier.Click += new System.EventHandler(this.mAppendHexIdentifier_Click);
             // 
             // frmMain
             // 
@@ -1284,8 +1284,8 @@
             this.gbType.ResumeLayout(false);
             this.gbType.PerformLayout();
             this.gbOutput.ResumeLayout(false);
-            this.pnOuput.ResumeLayout(false);
-            this.pnOuput.PerformLayout();
+            this.pnOutput.ResumeLayout(false);
+            this.pnOutput.PerformLayout();
             this.gbBits.ResumeLayout(false);
             this.pnBits.ResumeLayout(false);
             this.pnBits.PerformLayout();
@@ -1339,7 +1339,7 @@
         private System.Windows.Forms.Button btnE;
         private System.Windows.Forms.Button btnF;
         private System.Windows.Forms.GroupBox gbOutput;
-        private System.Windows.Forms.Panel pnOuput;
+        private System.Windows.Forms.Panel pnOutput;
         private System.Windows.Forms.CheckBox chkHex;
         private System.Windows.Forms.GroupBox gbBits;
         private System.Windows.Forms.Label lbTypeSeparator4;
@@ -1355,25 +1355,25 @@
         private System.Windows.Forms.Panel pnBits;
         private System.Windows.Forms.Label lbBytesLittle4;
         private System.Windows.Forms.Label lbBytesLittle8;
-        private ByteContainer bcBytes4;
-        private ByteContainer bcBytes8;
+        private murrty.controls.ByteContainer bcBytes4;
+        private murrty.controls.ByteContainer bcBytes8;
         private System.Windows.Forms.Label lbBytesLittle7;
         private System.Windows.Forms.Label lbBytesLittle3;
-        private ByteContainer bcBytes7;
-        private ByteContainer bcBytes3;
+        private murrty.controls.ByteContainer bcBytes7;
+        private murrty.controls.ByteContainer bcBytes3;
         private System.Windows.Forms.Label lbBytesBig4;
         private System.Windows.Forms.Label lbBytesBig8;
-        private ByteContainer bcBytes1;
+        private murrty.controls.ByteContainer bcBytes1;
         private System.Windows.Forms.Label lbBytesLittle1;
         private System.Windows.Forms.Label lbBytesLittle5;
-        private ByteContainer bcBytes6;
+        private murrty.controls.ByteContainer bcBytes6;
         private System.Windows.Forms.Label lbBytesLittle6;
-        private ByteContainer bcBytes2;
+        private murrty.controls.ByteContainer bcBytes2;
         private System.Windows.Forms.Label lbBytesLittle2;
         private System.Windows.Forms.Label lbBytesBig2;
         private System.Windows.Forms.Label lbBytesBig3;
         private System.Windows.Forms.Label lbBytesBig6;
-        private ByteContainer bcBytes5;
+        private murrty.controls.ByteContainer bcBytes5;
         private System.Windows.Forms.Label lbBytesBig7;
         private System.Windows.Forms.Label lbBytesBig5;
         private System.Windows.Forms.Label lbBytesBig1;
@@ -1398,6 +1398,9 @@
         private System.Windows.Forms.MenuItem mLowerSeparator;
         private System.Windows.Forms.MenuItem mPasteLower;
         private System.Windows.Forms.MenuItem mSimpleNames;
+        private System.Windows.Forms.MenuItem mSettingsSeparator;
+        private System.Windows.Forms.MenuItem mColors;
+        private System.Windows.Forms.MenuItem mAppendHexIdentifier;
     }
 }
 

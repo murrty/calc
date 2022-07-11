@@ -23,6 +23,12 @@ namespace calc {
             [In] string lpFileName
         );
 
+    }
+}
+
+
+namespace murrty.controls {
+    internal static class NativeMethods {
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         internal static extern IntPtr LoadCursor(
             [In, Optional] IntPtr hInstance,
@@ -33,6 +39,5 @@ namespace calc {
         internal static extern IntPtr SetCursor(
             [In, Optional] IntPtr hCursor
         );
-
     }
 }

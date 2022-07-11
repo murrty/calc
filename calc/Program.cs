@@ -17,7 +17,7 @@ namespace calc {
         /// <summary>
         /// The version of the current beta program.
         /// </summary>
-        public const string BetaVersion = "1.0-pre1";
+        public const string BetaVersion = "1.0-pre2";
         #endregion
 
         #region Runtime Fields
@@ -54,6 +54,8 @@ namespace calc {
         static int Main(string[] args) {
 #if DEBUG
             DebugMode = true;
+            //long f = 0x7F_FF_FF_FF_FF_FF_FF_FF;
+            //MessageBox.Show(f.ToString("#,##0"));
 #endif
             if (DebugMode || !SingleInstance || (Instance = new(true, ProgramGUID.Value)).WaitOne(TimeSpan.Zero, true)) {
                 Application.EnableVisualStyles();
